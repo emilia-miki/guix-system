@@ -22,13 +22,23 @@ set $menu wofi -i --show drun
 
 seat seat0 xcursor_theme Adwaita 24
 
-default_border none
+default_border pixel 2
 gaps inner 5
+
+# Rose Pine window border colours
+# format: <border> <background> <text> <indicator> <child_border>
+client.focused          #eb6f92 #1f1d2e #e0def4 #9ccfd8 #eb6f92
+client.focused_inactive #524f67 #1f1d2e #908caa #1f1d2e #524f67
+client.unfocused        #26233a #191724 #6e6a86 #191724 #26233a
+client.urgent           #f6c177 #eb6f92 #191724 #eb6f92 #f6c177
+client.background       #191724
 exec dbus-update-activation-environment --all
 exec waybar
 exec fcitx5 -d
 exec gpg-connect-agent updatestartuptty /bye
 exec brightnessctl -d kbd_backlight s 100%
+# Cap volume to 40% on startup if WirePlumber has no saved state (defaults to 100%)
+exec sh -c 'sleep 3 && vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk "{printf \"%.0f\", \$2 * 100}"); [ "${vol:-0}" -ge 95 ] && wpctl set-volume @DEFAULT_AUDIO_SINK@ 40%'
 # exec_always swaymsg border none
 
 ### Output configuration
@@ -244,7 +254,7 @@ bindsym $mod+r mode "resize"
     bindsym $mod+n exec grim -g "$(slurp -d)" - | swappy -f -
     bindsym $mod+m exec grim - | swappy -f -
     bindsym $mod+p exec swaylock
-    bindsym $mod+u exec ~/.config/sway/wofi-unicode
+    bindsym $mod+u exec rofimoji --files emojis_smileys_emotion emojis_people_body emojis_animals_nature emojis_food_drink emojis_activities emojis_travel_places emojis_objects emojis_symbols emojis_flags miscellaneous_symbols dingbats arrows mathematical_operators letterlike_symbols general_punctuation currency_symbols
     bindsym $mod+c exec hyprpicker -a
 
 #

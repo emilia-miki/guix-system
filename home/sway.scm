@@ -1,5 +1,6 @@
 (define-module (home sway)
   #:use-module (gnu home services)
+  #:use-module (gnu home services fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages gnome)
@@ -16,6 +17,7 @@
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (home wallpaper)
+  #:use-module (packages rofimoji)
   #:export (%sway-services))
 
 (define (executable-file name source)
@@ -63,6 +65,8 @@
                     qtsvg font-nerd-symbols breeze breeze-icons qt5ct qt6ct
                     ;; Cursor & media keys
                     adwaita-icon-theme playerctl
+                    ;; Emoji / character picker
+                    rofimoji
                     ;; Color picker
                     hyprpicker
                     ;; Fonts
@@ -77,6 +81,22 @@
                     font-ipa
                     font-ipa-ex
                     font-bitstream-vera))
+
+   (simple-service 'sway-fontconfig
+                   home-fontconfig-service-type
+                   (list
+                    '(match (@ (target "font"))
+                       (test (@ (name "family") (compare "eq"))
+                         (string "Noto Color Emoji"))
+                       (edit (@ (name "lang") (mode "assign"))
+                         (langset)))
+                    '(match (@ (target "pattern"))
+                       (edit (@ (name "family") (mode "append_last") (binding "weak"))
+                         (string "Unifont Upper")
+                         (string "Noto Sans Symbols 2")
+                         (string "Noto Sans Symbols")
+                         (string "Noto Sans Math")
+                         (string "Noto Sans")))))
 
    (simple-service 'sway-xdg-config
                    home-xdg-configuration-files-service-type
@@ -94,8 +114,14 @@
                       ,(executable-file "wifimenu" (local-file "files/waybar-wifimenu")))
                      ("waybar/wofi-bluetooth"
                       ,(executable-file "wofi-bluetooth" (local-file "files/waybar-wofi-bluetooth")))
-                     ("sway/wofi-unicode"
-                      ,(executable-file "wofi-unicode" (local-file "files/wofi-unicode")))
+                     ("rofimoji.rc"
+                      ,(plain-file "rofimoji.rc"
+                                   "\
+selector = wofi
+selector-args = --columns 8
+action = copy
+skin-tone = light
+"))
                      ("mako/config"
                       ,(local-file "files/mako-config"))
                      ("foot/foot.ini"
