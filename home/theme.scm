@@ -289,9 +289,9 @@ org.freedesktop.impl.portal.Settings=gtk
 org.freedesktop.impl.portal.FileChooser=gtk
 "))
 
-                     ;; User Kvantum theme override: bump layout_margin 4→6 and
-                     ;; layout_spacing 2→4 so form layouts in dialogs don't overlap.
-                     ;; Kvantum prefers ~/.config/Kvantum/<name>/ over system themes.
+                     ;; Patch the Kvantum SVG: replace all #1f1d2e (surface) fills with
+                     ;; #191724 (base) so list-view items and panel backgrounds use the
+                     ;; same colour and don't produce alternating zebra stripes.
                      ("Kvantum/rose-pine-love/rose-pine-love.svg"
                       ,(computed-file "rose-pine-love.svg"
                                       #~(begin
@@ -309,6 +309,9 @@ org.freedesktop.impl.portal.FileChooser=gtk
                                                 src
                                                 'pre "#191724" 'post)
                                                port))))))
+
+                     ;; Patch the kvconfig: bump layout_margin 4→6 and layout_spacing 2→4
+                     ;; so form layouts in KDE dialogs don't overlap at fractional scale.
                      ("Kvantum/rose-pine-love/rose-pine-love.kvconfig"
                       ,(computed-file "rose-pine-love.kvconfig"
                                       #~(begin
@@ -325,10 +328,7 @@ org.freedesktop.impl.portal.FileChooser=gtk
                                                 #f "layout_margin=4"
                                                 (regexp-substitute/global
                                                  #f "layout_spacing=2"
-                                                 (regexp-substitute/global
-                                                  #f "window\\.color=#1f1d2e"
-                                                  src
-                                                  'pre "window.color=#191724" 'post)
+                                                 src
                                                  'pre "layout_spacing=4" 'post)
                                                 'pre "layout_margin=6" 'post)
                                                port))))))
@@ -345,40 +345,6 @@ ColorScheme=RosePine
 [Icons]
 Theme=rose-pine-icons
 FallbackTheme=breeze-dark
-
-[Colors:Window]
-BackgroundNormal=25,23,36
-ForegroundNormal=224,222,244
-BackgroundAlternate=25,23,36
-
-[Colors:View]
-BackgroundNormal=25,23,36
-ForegroundNormal=224,222,244
-BackgroundAlternate=25,23,36
-ForegroundLink=156,207,216
-ForegroundVisited=196,167,231
-
-[Colors:Button]
-BackgroundNormal=30,28,42
-ForegroundNormal=224,222,244
-
-[Colors:Selection]
-BackgroundNormal=64,60,100
-ForegroundNormal=224,222,244
-
-[Colors:Tooltip]
-BackgroundNormal=30,28,42
-ForegroundNormal=224,222,244
-
-[Colors:Header]
-BackgroundNormal=25,23,36
-ForegroundNormal=224,222,244
-BackgroundAlternate=25,23,36
-
-[Colors:Complementary]
-BackgroundNormal=25,23,36
-ForegroundNormal=224,222,244
-BackgroundAlternate=25,23,36
 "))))
 
    (simple-service 'qt6ct-conf
@@ -406,15 +372,6 @@ QDialog QLabel {
    form rows to receive their full computed height without compression. */
 KPageDialog {
     min-height: 700px;
-}
-
-/* Force QListView alternate-row color to match the base color so KFilePlacesView
-   (Dolphin Places panel) shows no zebra stripes. Without KDE_FULL_SESSION the
-   [Colors:Header] BackgroundAlternate falls back to a computed shade that differs
-   from #191724, producing a visible stripe on section-header rows. */
-QListView {
-    alternate-background-color: #191724;
-    background-color: #191724;
 }
 " port)))
                          (call-with-output-file conf-path
