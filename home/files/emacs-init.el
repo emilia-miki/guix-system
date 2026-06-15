@@ -109,6 +109,7 @@
 (use-package yaml-mode :mode "\\.\\(yaml\\|yml\\)\\'")
 (use-package lua-mode :mode "\\.lua\\'")
 (use-package toml-mode :mode "\\.toml\\'")
+(use-package markdown-mode :mode "\\.md\\'")
 
 ;; ── Common Lisp ────────────────────────────────────────────────────
 (use-package sly
