@@ -32,25 +32,18 @@
 
                     (let ((port (open-pipe*
                                  OPEN_READ
-                                 #$(file-append dbus "/bin/dbus-monitor")
+                                 #$(file-append glib "/bin/gdbus")
+                                 "monitor"
                                  "--system"
-                                 #$(string-append
-                                    "type='signal',"
-                                    "interface='org.freedesktop.DBus.Properties',"
-                                    "path='" %aventho-device-path "'"))))
-                      (let loop ((expecting #f))
+                                 "--dest" "org.bluez"
+                                 "--object-path" #$%aventho-device-path)))
+                      (let loop ()
                         (let ((line (read-line port)))
                           (unless (eof-object? line)
-                            (cond
-                             ((string-contains line "\"Connected\"")
-                              (loop #t))
-                             ((and expecting (string-contains line "boolean true"))
-                              (connect-a2dp!)
-                              (loop #f))
-                             ((and expecting (string-contains line "boolean"))
-                              (loop #f)) ; Connected=false, ignore
-                             (else
-                              (loop expecting))))))))))
+                            (when (and (string-contains line "Connected")
+                                       (string-contains line "<true>"))
+                              (connect-a2dp!))
+                            (loop))))))))
 
 (define-public %bluetooth-services
   (list
