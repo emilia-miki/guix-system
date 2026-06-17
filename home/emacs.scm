@@ -38,34 +38,34 @@
                    home-files-service-type
                    `((".offlineimaprc"
                       ,(mixed-text-file "offlineimaprc"
-                         "[general]\n"
-                         "accounts = ProtonMail\n"
-                         "ui = ttyui\n"
-                         "\n"
-                         "[Account ProtonMail]\n"
-                         "localrepository = ProtonMail-Local\n"
-                         "remoterepository = ProtonMail-Remote\n"
-                         "\n"
-                         "[Repository ProtonMail-Local]\n"
-                         "type = Maildir\n"
-                         "localfolders = ~/.local/mail/protonmail\n"
-                         "\n"
-                         "[Repository ProtonMail-Remote]\n"
-                         "type = IMAP\n"
-                         "remotehost = localhost\n"
-                         "remoteport = 1143\n"
-                         "remoteuser = " %protonmail-address "\n"
-                         "remotepasseval = open(__import__('os').path.expanduser('~/.local/share/hydroxide-bridge-password')).read().strip()\n"
-                         "ssl = no\n"
-                         "auth_mechanisms = LOGIN\n"
-                         "maxconnections = 1\n"
-                         "folderfilter = lambda f: f != 'All Mail'\n"))))
+                                        "[general]\n"
+                                        "accounts = ProtonMail\n"
+                                        "ui = ttyui\n"
+                                        "\n"
+                                        "[Account ProtonMail]\n"
+                                        "localrepository = ProtonMail-Local\n"
+                                        "remoterepository = ProtonMail-Remote\n"
+                                        "\n"
+                                        "[Repository ProtonMail-Local]\n"
+                                        "type = Maildir\n"
+                                        "localfolders = ~/.local/mail/protonmail\n"
+                                        "\n"
+                                        "[Repository ProtonMail-Remote]\n"
+                                        "type = IMAP\n"
+                                        "remotehost = localhost\n"
+                                        "remoteport = 1143\n"
+                                        "remoteuser = " %protonmail-address "\n"
+                                        "remotepasseval = open(__import__('os').path.expanduser('~/.local/share/hydroxide-bridge-password')).read().strip()\n"
+                                        "ssl = no\n"
+                                        "auth_mechanisms = LOGIN\n"
+                                        "maxconnections = 1\n"
+                                        "folderfilter = lambda f: f != 'All Mail'\n"))))
 
    (simple-service 'emacs-local-mail
                    home-xdg-configuration-files-service-type
                    `(("emacs/local-mail.el"
                       ,(mixed-text-file "local-mail.el"
-                         "(setq user-mail-address \"" %protonmail-address "\")\n"))))
+                                        "(setq user-mail-address \"" %protonmail-address "\")\n"))))
 
    (simple-service 'emacs-init-symlink
                    home-activation-service-type

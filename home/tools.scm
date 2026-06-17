@@ -98,12 +98,12 @@
                       ,(plain-file "gitignore" "**/.claude/\n"))
                      ("git/config"
                       ,(mixed-text-file "gitconfig"
-                         "[user]\n"
-                         "\tname = Emilia Miki\n"
-                         "\temail = " %protonmail-address "\n"
-                         "\n"
-                         "[init]\n"
-                         "\tdefaultBranch = main\n"
-                         "\n"
-                         "[core]\n"
-                         "\texcludesFile = ~/.config/git/ignore\n"))))))))
+                                        "[user]\n"
+                                        "\tname = Emilia Miki\n"
+                                        "\temail = " %protonmail-address "\n"
+                                        "\n"
+                                        "[init]\n"
+                                        "\tdefaultBranch = main\n"
+                                        "\n"
+                                        "[core]\n"
+                                        "\texcludesFile = ~/.config/git/ignore\n"))))))
