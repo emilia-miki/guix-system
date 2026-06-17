@@ -1,6 +1,8 @@
 (define-module (home tools)
   #:use-module (gnu home services)
   #:use-module (gnu home services mpv)
+  #:use-module (gnu home services shepherd)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -14,6 +16,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-apps)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -63,11 +66,28 @@
                     gcc-toolchain autoconf automake gnu-make
                     libtool cmake clang pkg-config unzip typst markdown
                     ;; libraries (for development)
+                    guile-lib guile-arguments
                     poppler libpng zlib djvulibre djview
                     ;; media processing
                     ffmpeg yt-dlp cava mpv audacity-wayland
                     ;; other
                     relax-player claude-code helix-steel))
+
+   (simple-service 'hydroxide
+                   home-shepherd-service-type
+                   (list
+                    (shepherd-service
+                     (provision '(hydroxide-smtp))
+                     (start #~(make-forkexec-constructor
+                               (list #$(file-append hydroxide "/bin/hydroxide")
+                                     "smtp")))
+                     (stop #~(make-kill-destructor)))
+                    (shepherd-service
+                     (provision '(hydroxide-imap))
+                     (start #~(make-forkexec-constructor
+                               (list #$(file-append hydroxide "/bin/hydroxide")
+                                     "imap")))
+                     (stop #~(make-kill-destructor)))))
 
    (simple-service 'tools-xdg-config
                    home-xdg-configuration-files-service-type
