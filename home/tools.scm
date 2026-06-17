@@ -38,6 +38,7 @@
   #:use-module (packages claude-code)
   #:use-module (packages helix)
   #:use-module (packages relax-player)
+  #:use-module (local)
   #:export (%tools-services))
 
 (define-public %tools-services
@@ -96,15 +97,13 @@
                      ("git/ignore"
                       ,(plain-file "gitignore" "**/.claude/\n"))
                      ("git/config"
-                      ,(plain-file "gitconfig"
-                                   "\
-[user]
-\tname = Emilia Miki
-\temail = REDACTED
-
-[init]
-\tdefaultBranch = main
-
-[core]
-\texcludesFile = ~/.config/git/ignore
-"))))))
+                      ,(mixed-text-file "gitconfig"
+                         "[user]\n"
+                         "\tname = Emilia Miki\n"
+                         "\temail = " %protonmail-address "\n"
+                         "\n"
+                         "[init]\n"
+                         "\tdefaultBranch = main\n"
+                         "\n"
+                         "[core]\n"
+                         "\texcludesFile = ~/.config/git/ignore\n"))))))))

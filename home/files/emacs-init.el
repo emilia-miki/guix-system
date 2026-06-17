@@ -5,6 +5,8 @@
 
 (add-to-list 'load-path
              (expand-file-name "~/.guix-home/profile/share/emacs/site-lisp/pdf-tools-1.3.0"))
+(add-to-list 'load-path
+             (expand-file-name "~/.guix-home/profile/share/emacs/site-lisp/mu4e"))
 
 ;; ── elpaca bootstrap ───────────────────────────────────────────────
 (defvar elpaca-installer-version 0.12)
@@ -377,6 +379,33 @@
                   "https://www.phoronix.com/rss.php"))
   (elfeed-search-filter "@6-months-ago +unread"))
 
+;; ── Email (mu4e) ───────────────────────────────────────────────────
+(use-package mu4e
+  :ensure nil
+  :config
+  (setq mu4e-maildir       "~/.local/mail"
+        mu4e-get-mail-command "offlineimap"
+        mu4e-update-interval  300)
+
+  (setq mu4e-sent-folder   "/protonmail/Sent"
+        mu4e-drafts-folder "/protonmail/Drafts"
+        mu4e-trash-folder  "/protonmail/Trash")
+
+  ;; ProtonMail stores sent mail server-side; skip the local copy
+  (setq mu4e-sent-messages-behavior 'delete)
+
+  ;; Send via hydroxide SMTP bridge (auth from ~/.authinfo)
+  (setq send-mail-function         'smtpmail-send-it
+        message-send-mail-function 'smtpmail-send-it
+        smtpmail-smtp-server       "localhost"
+        smtpmail-smtp-service      1025
+        smtpmail-stream-type       'plain)
+
+  (setq user-full-name "Emilia Miki")
+  (load (expand-file-name "~/.config/emacs/local-mail.el") t)
+
+  :bind ("C-c M" . mu4e))
+
 ;; ── IRC ───────────────────────────────────────────────────────────
 (use-package erc
   :ensure nil                           ; built-in
@@ -469,23 +498,11 @@
 (use-package which-key :config (which-key-mode 1))
 
 (use-package envrc
-  :init
-  (setq envrc-direnv-executable
-        (or (executable-find "direnv") "direnv"))
-  :config
-  (defun my/envrc--remote-direnv-advice (orig-fun env-dir)
-    (let ((envrc-direnv-executable
-           (if (file-remote-p env-dir)
-               (file-local-name
-                (expand-file-name "~/.guix-profile/bin/direnv" env-dir))
-             envrc-direnv-executable)))
-      (funcall orig-fun env-dir)))
-  (advice-add 'envrc--export :around #'my/envrc--remote-direnv-advice)
   :hook ((find-file  . envrc-mode)
          (dired-mode . envrc-mode)))
+
+(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 
 ;; ── Server ─────────────────────────────────────────────────────────
 (unless (bound-and-true-p server-process)
   (server-start))
-
-

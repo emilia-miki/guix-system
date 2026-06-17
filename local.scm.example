@@ -1,6 +1,7 @@
 (define-module (local)
   #:use-module (gnu services base)
-  #:export (%local-hosts
+  #:export (%protonmail-address
+            %local-hosts
             %work-ssh-hostname
             %work-ssh-user
             %thinkcentre-ssh-hostname
@@ -11,6 +12,8 @@
             %ovpn-connection-id
             %vpn-ca-cert
             %nmconnection))
+
+(define-public %protonmail-address "you@pm.me")
 
 ;; Add entries like: (host "1.2.3.4" "hostname.example.com")
 (define-public %local-hosts
