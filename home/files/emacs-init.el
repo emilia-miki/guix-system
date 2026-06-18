@@ -357,6 +357,11 @@
 (use-package pdf-tools
   :config (pdf-tools-install))
 
+(use-package pdf-view-restore
+  :hook (pdf-view-mode . pdf-view-restore-mode)
+  :custom (pdf-view-restore-filename
+           (expand-file-name "pdf-view-restore" user-emacs-directory)))
+
 (use-package nov
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
