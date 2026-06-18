@@ -17,6 +17,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages telegram)
   #:use-module (gnu packages unicode)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vnc)
@@ -53,7 +54,7 @@
                     ;; graphics
                     gimp blender-wayland
                     ;; network/remote
-                    wireshark remmina qbittorrent moonlight-qt
+                    wireshark remmina qbittorrent moonlight-qt telegram-desktop
                     ;; other
                     flatpak qmk ucd gsettings-desktop-schemas bluez))
 

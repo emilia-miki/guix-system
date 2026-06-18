@@ -37,8 +37,6 @@ exec waybar
 exec fcitx5 -d
 exec gpg-connect-agent updatestartuptty /bye
 exec brightnessctl -d kbd_backlight s 100%
-# Cap volume to 40% on startup if WirePlumber has no saved state (defaults to 100%)
-exec sh -c 'sleep 3 && vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk "{printf \"%.0f\", \$2 * 100}"); [ "${vol:-0}" -ge 95 ] && wpctl set-volume @DEFAULT_AUDIO_SINK@ 40%'
 # exec_always swaymsg border none
 
 ### Output configuration
@@ -53,11 +51,14 @@ output * bg @WALLPAPER@ fill scale 1.5
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
 assign [app_id="feishin"] workspace 1
+workspace 2 layout tabbed
 assign [app_id="librewolf"] workspace 2
+assign [app_id="org.telegram.desktop"] workspace 2
 assign [app_id="emacs"] workspace 3
 
 exec emacs
 exec librewolf
+exec Telegram
 exec feishin
 exec mako
 exec udiskie -t
