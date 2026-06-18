@@ -70,33 +70,60 @@
                     ;; Color picker
                     hyprpicker
                     ;; Fonts
-                    font-awesome
-                    font-nerd-fira-code
+                    font-sarasa-gothic
                     font-google-noto
-                    font-google-noto-sans-cjk
-                    font-google-noto-serif-cjk
                     font-google-noto-emoji
-                    font-dejavu
-                    font-gnu-unifont
-                    font-ipa
-                    font-ipa-ex
-                    font-bitstream-vera))
+                    font-gnu-unifont))
 
    (simple-service 'sway-fontconfig
                    home-fontconfig-service-type
                    (list
+                    ;; ── Default family assignments ──
+
+                    ;; Sarasa Term J → monospace
+                    '(match (@ (target "pattern"))
+                       (test (@ (name "family") (compare "eq"))
+                             (string "monospace"))
+                       (edit (@ (name "family") (mode "prepend") (binding "strong"))
+                             (string "Sarasa Term J")))
+
+                    ;; Sarasa UI J → sans-serif
+                    '(match (@ (target "pattern"))
+                       (test (@ (name "family") (compare "eq"))
+                             (string "sans-serif"))
+                       (edit (@ (name "family") (mode "prepend") (binding "strong"))
+                             (string "Sarasa UI J")))
+
+                    ;; Sarasa Gothic J → serif
+                    '(match (@ (target "pattern"))
+                       (test (@ (name "family") (compare "eq"))
+                             (string "serif"))
+                       (edit (@ (name "family") (mode "prepend") (binding "strong"))
+                             (string "Sarasa Gothic J")))
+
+                    ;; ── Font metadata fixes ──
+
+                    ;; Mark all Sarasa monospace variants as monospace spacing
+                    '(match (@ (target "font"))
+                       (test (@ (name "family") (compare "contains"))
+                             (string "Sarasa"))
+                       (edit (@ (name "spacing") (mode "assign"))
+                             (integer 100)))
+
+                    ;; Make Noto Color Emoji available for all languages
                     '(match (@ (target "font"))
                        (test (@ (name "family") (compare "eq"))
-                         (string "Noto Color Emoji"))
+                             (string "Noto Color Emoji"))
                        (edit (@ (name "lang") (mode "assign"))
-                         (langset)))
+                             (langset)))
+
+                    ;; ── Global fallback chain ──
                     '(match (@ (target "pattern"))
                        (edit (@ (name "family") (mode "append_last") (binding "weak"))
-                         (string "Unifont Upper")
-                         (string "Noto Sans Symbols 2")
-                         (string "Noto Sans Symbols")
-                         (string "Noto Sans Math")
-                         (string "Noto Sans")))))
+                             (string "Noto Sans")
+                             (string "Noto Color Emoji")
+                             (string "Symbols Nerd Font Mono")
+                             (string "Unifont")))))
 
    (simple-service 'sway-xdg-config
                    home-xdg-configuration-files-service-type

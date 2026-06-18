@@ -250,11 +250,7 @@
 ;; ── Terminal emulator/shell stuff ──────────────────────────────────
 (use-package eat
   :custom (eat-term-name "xterm-256color")
-  :config (ignore-errors (eat-eshell-mode 1))
-  :hook ((eat-mode    . (lambda ()
-                          (face-remap-add-relative 'default :family "DejaVu Sans Mono")))
-         (eshell-mode . (lambda ()
-                          (face-remap-add-relative 'default :family "DejaVu Sans Mono")))))
+  :config (ignore-errors (eat-eshell-mode 1)))
 (defun eshell/clear ()
   (let ((inhibit-read-only t))
     (erase-buffer)))
@@ -442,16 +438,7 @@
 ;; ── Editor basics ──────────────────────────────────────────────────
 (setq-default indent-tabs-mode nil tab-width 4 truncate-lines t)
 
-;;(defvar my/font-name "Fira Code")
-(defvar my/font-name "Berkeley Mono")
-(defvar my/font-height 140)
-
-(defun my/set-font ()
-  (when (find-font (font-spec :name my/font-name))
-    (set-face-attribute 'default nil :family my/font-name :height my/font-height :weight 'regular)))
-
-(my/set-font)
-(add-hook 'server-after-make-frame-hook #'my/set-font)
+(set-face-attribute 'default nil :height 160)
 (setq ring-bell-function 'ignore use-short-answers t
       make-backup-files nil auto-save-default nil create-lockfiles nil)
 (global-auto-revert-mode 1)
