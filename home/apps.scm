@@ -111,6 +111,11 @@
                  ;; DjVu → emacs
                  (image/vnd.djvu . emacsclient.desktop)
 
+                 ;; Browser -> librewolf
+                 (x-scheme-handler/http . librewolf.desktop)
+                 (x-scheme-handler/https . librewolf.desktop)
+                 (x-scheme-handler/chrome . librewolf.desktop)
+
                  ;; Document files → libreoffice
                  (application/vnd.oasis.opendocument.text . libreoffice-writer.desktop)
                  (application/vnd.oasis.opendocument.spreadsheet . libreoffice-calc.desktop)
