@@ -22,7 +22,7 @@
        (name 'nonguix)
        (url "https://gitlab.com/nonguix/nonguix")
        (branch "master")
-       (commit "4ae06fb5cb75f2ca6b0f2f384f41677ae28c069a")
+       (commit "bf39542ca537fde8839b209ac21d6f3254469b15")
        (introduction
         (make-channel-introduction
          "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
@@ -44,15 +44,10 @@
        (branch "master")
        (commit "fd6da8ae3bfcf2268302a0644dc2be33e69113af"))
       (channel
-       (name 'torenisa)
-       (url "https://codeberg.org/coopi/torenisa")
-       (branch "main")
-       (commit "19362d71acddb7021f2e24f8ee199f8b2f203595"))
-      (channel
        (name 'guix)
        (url "https://git.guix.gnu.org/guix.git")
        (branch "master")
-       (commit "c3ebf31753a6de0b163d2f3b63ab258fedfd6699")
+       (commit "d1e9e23fd441fce828fa74616271b00b90853cee")
        (introduction
         (make-channel-introduction
          "9edb3f66fd807b096b48283debdcddccfea34bad"

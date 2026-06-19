@@ -48,7 +48,7 @@
 GUIX_DIR=\"$HOME/Projects/guix-system\"
 sudo guix system reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/configuration.scm\" && \\
 guix home reconfigure -L \"$GUIX_DIR\" \"$GUIX_DIR/guix-home-config.scm\" && \\
-guix describe -f channels > \"$GUIX_DIR/channels.lock.scm\"
+guix describe -f channels > \"$GUIX_DIR/channels-lock.scm\"
 " port)))
             (chmod script #o755))))))
    (synopsis "System reconfigure script")
