@@ -32,7 +32,7 @@
 
                     (let ((port (open-pipe*
                                  OPEN_READ
-                                 #$(file-append glib "/bin/gdbus")
+                                 #$(file-append (gexp-input glib "bin") "/bin/gdbus")
                                  "monitor"
                                  "--system"
                                  "--dest" "org.bluez"
