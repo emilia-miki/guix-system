@@ -495,6 +495,14 @@
 
 (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 
+;; ── org-mode ───────────────────────────────────────────────────────
+(use-package org-mode
+  :ensure nil
+  :bind (("C-c o l" . org-store-link)
+         ("C-c o a" . org-agenda)
+         ("C-c o c" . org-capture))
+  :hook (org-mode . org-indent-mode))
+
 ;; ── Server ─────────────────────────────────────────────────────────
 (unless (bound-and-true-p server-process)
   (server-start))
