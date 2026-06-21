@@ -15,6 +15,7 @@ creating the parent directory if needed."
                              (link   (string-append home #$link))
                              (target (string-append home #$target)))
                         (mkdir-p (string-append home #$dir))
-                        (when (file-exists? link)
-                          (delete-file link))
+                        (catch 'system-error
+                          (lambda () (delete-file link))
+                          (const #f))
                         (symlink target link)))))

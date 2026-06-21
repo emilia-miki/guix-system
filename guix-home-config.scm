@@ -17,7 +17,9 @@
   #:use-module (home fcitx5)
   #:use-module (home shell)
   #:use-module (home ssh)
-  #:use-module (home sway)
+  ;; Swap these two lines to switch compositor:
+  #:use-module (home mango)
+  ;; #:use-module (home sway)
   #:use-module (home tools))
 
 (home-environment
@@ -52,7 +54,8 @@
                ("nano/nanorc" ,%default-nanorc)))
     (service home-xdg-user-directories-service-type))
 
-   %sway-services
+   %mango-services
+   ;; %sway-services
    %env-services
    %shell-services
    %emacs-services

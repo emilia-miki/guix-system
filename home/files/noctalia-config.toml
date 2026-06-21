@@ -110,6 +110,7 @@ hide_when_no_media = true
 max_length = 600
 
 [widget.workspaces]
-display = "name"
+display = "id"
 minimal = true
 scale = 1.3500000000000001
+names = ["一", "二", "三", "四", "五", "六", "七", "八", "九"]

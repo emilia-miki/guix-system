@@ -20,7 +20,8 @@
 
 # Auto-start Sway on first TTY at login
 if [ -z \"$WAYLAND_DISPLAY\" ] && [ \"$(tty)\" = \"/dev/tty1\" ]; then
-  exec sway
+  exec mango
+  # exec sway
 fi
 "))
                      (".bashrc"
