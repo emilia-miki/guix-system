@@ -504,6 +504,17 @@
          ("C-c o c" . org-capture))
   :hook (org-mode . org-indent-mode))
 
+;; ── Dashboard ──────────────────────────────────────────────────────
+(use-package nerd-icons)
+(use-package dashboard
+  :config
+  (setq dashboard-display-icons-p t
+        dashboard-icon-type 'nerd-icons
+        inhibit-startup-screen t)
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+  (dashboard-setup-startup-hook))
+
 ;; ── Server ─────────────────────────────────────────────────────────
 (unless (bound-and-true-p server-process)
   (server-start))
