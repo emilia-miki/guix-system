@@ -7,6 +7,7 @@
              (expand-file-name "~/.guix-home/profile/share/emacs/site-lisp/pdf-tools-1.3.0"))
 (add-to-list 'load-path
              (expand-file-name "~/.guix-home/profile/share/emacs/site-lisp/mu4e"))
+(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
 
 ;; ── elpaca bootstrap ───────────────────────────────────────────────
 (defvar elpaca-installer-version 0.12)
@@ -68,7 +69,7 @@
 (elpaca-wait)
 
 ;; ── Theme ──────────────────────────────────────────────────────────
-(load-theme 'modus-vivendi t)
+(load-theme 'noctalia t)
 
 ;; ── Modern completion ──────────────────────────────────────────────
 (use-package vertico :config (vertico-mode 1))
@@ -506,3 +507,17 @@
 ;; ── Server ─────────────────────────────────────────────────────────
 (unless (bound-and-true-p server-process)
   (server-start))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("0549cb478d6ad388680851fbf81b0d6628bb893ac931fd2f56102bdc67e81836"
+     default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

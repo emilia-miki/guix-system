@@ -5,35 +5,36 @@
 # Read `man 5 sway` for a complete reference.
 
 ### Variables
-#
-# Logo key. Use Mod1 for Alt.
+
+set $ipc noctalia msg
 set $mod Mod4
-# Home row direction keys, like vim
 set $left h
 set $down j
 set $up k
 set $right l
-# Your preferred terminal emulator
 set $term foot
-# set $term ghostty
-# Your preferred application launcher
-# set $menu wmenu-run
-set $menu wofi -i --show drun
+set $menu $ipc panel-toggle launcher
+
+set $ws1  一
+set $ws2  二
+set $ws3  三
+set $ws4  四
+set $ws5  五
+set $ws6  六
+set $ws7  七
+set $ws8  八
+set $ws9  九
+set $ws10 十
 
 seat seat0 xcursor_theme Adwaita 24
 
 default_border pixel 2
 gaps inner 5
 
-# Rose Pine window border colours
-# format: <border> <background> <text> <indicator> <child_border>
-client.focused          #eb6f92 #1f1d2e #e0def4 #9ccfd8 #eb6f92
-client.focused_inactive #524f67 #1f1d2e #908caa #1f1d2e #524f67
-client.unfocused        #26233a #191724 #6e6a86 #191724 #26233a
-client.urgent           #f6c177 #eb6f92 #191724 #eb6f92 #f6c177
-client.background       #191724
+include ~/.config/sway/noctalia
 exec dbus-update-activation-environment --all
-exec waybar
+exec noctalia
+exec udiskie -t
 exec fcitx5 -d
 exec gpg-connect-agent updatestartuptty /bye
 exec brightnessctl -d kbd_backlight s 100%
@@ -41,8 +42,7 @@ exec brightnessctl -d kbd_backlight s 100%
 
 ### Output configuration
 #
-# Default wallpaper (more resolutions are available in /run/current-system/sw/share/backgrounds/sway/)
-output * bg @WALLPAPER@ fill scale 1.5
+output * scale 1.5
 #
 # Example configuration:
 #
@@ -50,18 +50,18 @@ output * bg @WALLPAPER@ fill scale 1.5
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
-assign [app_id="feishin"] workspace 1
-workspace 2 layout tabbed
-assign [app_id="librewolf"] workspace 2
-assign [app_id="org.telegram.desktop"] workspace 2
-assign [app_id="emacs"] workspace 3
+assign [app_id="feishin"] workspace $ws1
+assign [app_id="librewolf"] workspace $ws2
+assign [app_id="org.telegram.desktop"] workspace $ws2
+assign [app_id="emacs"] workspace $ws3
+
+for_window [app_id="librewolf"] layout tabbed
+for_window [app_id="org.telegram.desktop"] layout tabbed
 
 exec emacs
 exec librewolf
 exec Telegram
 exec feishin
-exec mako
-exec udiskie -t
 
 ### Idle configuration
 #
@@ -149,29 +149,27 @@ input "1452:641:Apple_SPI_Keyboard" {
 # Workspaces:
 #
     # Switch to workspace
-    bindsym $mod+1 workspace number 1
-    bindsym $mod+2 workspace number 2
-    bindsym $mod+3 workspace number 3
-    bindsym $mod+4 workspace number 4
-    bindsym $mod+5 workspace number 5
-    bindsym $mod+6 workspace number 6
-    bindsym $mod+7 workspace number 7
-    bindsym $mod+8 workspace number 8
-    bindsym $mod+9 workspace number 9
-    bindsym $mod+0 workspace number 10
+    bindsym $mod+1 workspace $ws1
+    bindsym $mod+2 workspace $ws2
+    bindsym $mod+3 workspace $ws3
+    bindsym $mod+4 workspace $ws4
+    bindsym $mod+5 workspace $ws5
+    bindsym $mod+6 workspace $ws6
+    bindsym $mod+7 workspace $ws7
+    bindsym $mod+8 workspace $ws8
+    bindsym $mod+9 workspace $ws9
+    bindsym $mod+0 workspace $ws10
     # Move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace number 1
-    bindsym $mod+Shift+2 move container to workspace number 2
-    bindsym $mod+Shift+3 move container to workspace number 3
-    bindsym $mod+Shift+4 move container to workspace number 4
-    bindsym $mod+Shift+5 move container to workspace number 5
-    bindsym $mod+Shift+6 move container to workspace number 6
-    bindsym $mod+Shift+7 move container to workspace number 7
-    bindsym $mod+Shift+8 move container to workspace number 8
-    bindsym $mod+Shift+9 move container to workspace number 9
-    bindsym $mod+Shift+0 move container to workspace number 10
-    # Note: workspaces can have any name you want, not just numbers.
-    # We just use 1-10 as the default.
+    bindsym $mod+Shift+1 move container to workspace $ws1
+    bindsym $mod+Shift+2 move container to workspace $ws2
+    bindsym $mod+Shift+3 move container to workspace $ws3
+    bindsym $mod+Shift+4 move container to workspace $ws4
+    bindsym $mod+Shift+5 move container to workspace $ws5
+    bindsym $mod+Shift+6 move container to workspace $ws6
+    bindsym $mod+Shift+7 move container to workspace $ws7
+    bindsym $mod+Shift+8 move container to workspace $ws8
+    bindsym $mod+Shift+9 move container to workspace $ws9
+    bindsym $mod+Shift+0 move container to workspace $ws10
 #
 # Layout stuff:
 #
@@ -237,24 +235,24 @@ bindsym $mod+r mode "resize"
 # Utilities:
 #
     # Special keys to adjust volume via PulseAudio
-    bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
-    bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5%
-    bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
-    bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
-    bindsym --locked XF86AudioRecord exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
-    bindsym --locked XF86AudioPlay exec playerctl play-pause
-    bindsym --locked XF86AudioPause exec playerctl play-pause
-    bindsym --locked XF86AudioNext exec playerctl next
-    bindsym --locked XF86AudioPrev exec playerctl previous
-    bindsym --locked XF86AudioStop exec playerctl stop
+    bindsym --locked XF86AudioMute exec $ipc volume-mute
+    bindsym --locked XF86AudioLowerVolume exec $ipc volume-down
+    bindsym --locked XF86AudioRaiseVolume exec $ipc volume-up
+    bindsym --locked XF86AudioMicMute exec $ipc mic-mute
+    bindsym --locked XF86AudioRecord exec $ipc mic-mute
+    bindsym --locked XF86AudioPlay exec $ipc media toggle
+    bindsym --locked XF86AudioPause exec $ipc media toggle
+    bindsym --locked XF86AudioNext exec $ipc media next
+    bindsym --locked XF86AudioPrev exec $ipc media previous
+    bindsym --locked XF86AudioStop exec $ipc media stop
     bindsym --locked XF86Search exec $menu
     # Special keys to adjust brightness via brightnessctl
-    bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
-    bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+    bindsym --locked XF86MonBrightnessDown exec $ipc brightness-down
+    bindsym --locked XF86MonBrightnessUp exec $ipc brightness-up
     # Special key to take a screenshot with grim
-    bindsym $mod+n exec grim -g "$(slurp -d)" - | swappy -f -
-    bindsym $mod+m exec grim - | swappy -f -
-    bindsym $mod+p exec swaylock
+    bindsym $mod+n exec $ipc screenshot-region
+    bindsym $mod+m exec $ipc screenshot-fullscreen
+    bindsym $mod+p exec $ipc session lock
     bindsym $mod+u exec rofimoji --files emojis_smileys_emotion emojis_people_body emojis_animals_nature emojis_food_drink emojis_activities emojis_travel_places emojis_objects emojis_symbols emojis_flags miscellaneous_symbols dingbats arrows mathematical_operators letterlike_symbols general_punctuation currency_symbols
     bindsym $mod+c exec hyprpicker -a
 

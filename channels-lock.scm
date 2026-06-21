@@ -1,4 +1,9 @@
 (list (channel
+       (name 'noctalia)
+       (url "https://github.com/noctalia-dev/noctalia")
+       (branch "main")
+       (commit "7584f938dcf309f561309202cbb328c8f0c47c34"))
+      (channel
        (name 'asahi)
        (url "https://codeberg.org/asahi-guix/channel")
        (branch "main")

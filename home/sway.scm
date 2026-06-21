@@ -4,55 +4,57 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnome-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-plasma)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lxqt)
   #:use-module (gnu packages music)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages qt)
+  #:use-module (packages qt6ct-kde)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu services)
   #:use-module (guix gexp)
-  #:use-module (home wallpaper)
+  #:use-module (noctalia)
   #:use-module (packages rofimoji)
+  #:use-module (home utils)
   #:export (%sway-services))
-
-(define (executable-file name source)
-  (computed-file name
-                 #~(begin
-                     (copy-file #$source #$output)
-                     (chmod #$output #o755))))
-
-(define (with-wallpaper name template)
-  (computed-file name
-                 #~(begin
-                     (use-modules (ice-9 textual-ports) (ice-9 regex))
-                     (call-with-output-file #$output
-                       (lambda (port)
-                         (display
-                          (regexp-substitute/global #f "@WALLPAPER@"
-                                                    (call-with-input-file #$template get-string-all)
-                                                    'pre #$%wallpaper 'post)
-                          port))))))
 
 (define-public %sway-services
   (list
+   (simple-service 'theme-env
+                   home-environment-variables-service-type
+                   '(("QT_QPA_PLATFORMTHEME"  . "qt6ct")
+                     ("QT_PLUGIN_PATH"        . "$HOME/.guix-home/profile/lib:$HOME/.guix-home/profile/lib/qt6/plugins:/run/current-system/profile/lib/qt6/plugins")
+                     ("ADW_DEBUG_COLOR_SCHEME" . "prefer-dark")
+                     ("XCURSOR_THEME" . "Adwaita")
+                     ("XCURSOR_SIZE"  . "24")
+                     ("QT_SCALE_FACTOR_ROUNDING_POLICY" . "PassThrough")))
+
+   (simple-service 'desktop-interface-settings
+                   home-activation-service-type
+                   #~(let ((dconf #$(file-append dconf "/bin/dconf")))
+                       (system* dconf "write"
+                                "/org/gnome/desktop/interface/gtk-theme"
+                                "'adw-gtk3'")
+                       (system* dconf "write"
+                                "/org/gnome/desktop/interface/color-scheme"
+                                "'prefer-dark'")
+                       (system* dconf "write"
+                                "/org/gnome/desktop/interface/cursor-size"
+                                "24")))
+
    (simple-service 'sway-packages
                    home-profile-service-type
                    (list
                     ;; Core compositor & shell
-                    swayidle swaylock swaybg waybar
-                    ;; Terminal & launcher
-                    foot wofi
-                    ;; Notifications
-                    mako
-                    ;; Screenshots & annotation
-                    grim slurp swappy
-                    ;; Clipboard
-                    wl-clipboard
+                    noctalia-git adw-gtk3-theme qt6ct-kde brightnessctl
+                    ;; Terminal
+                    foot
                     ;; PolicyKit agent
                     polkit-gnome
                     ;; Portals (screen sharing, file pickers)
@@ -62,11 +64,11 @@
                     ;; Notifications library
                     libnotify
                     ;; Qt theming
-                    qtsvg font-nerd-symbols breeze breeze-icons qt5ct qt6ct
+                    qtsvg font-nerd-symbols breeze breeze-icons qt5ct qt6ct-kde
                     ;; Cursor & media keys
                     adwaita-icon-theme playerctl
                     ;; Emoji / character picker
-                    rofimoji
+                    rofimoji wofi
                     ;; Color picker
                     hyprpicker
                     ;; Fonts
@@ -108,7 +110,7 @@
                        (test (@ (name "family") (compare "contains"))
                              (string "Sarasa"))
                        (edit (@ (name "spacing") (mode "assign"))
-                             (integer 100)))
+                             (int 100)))
 
                     ;; Make Noto Color Emoji available for all languages
                     '(match (@ (target "font"))
@@ -127,92 +129,56 @@
 
    (simple-service 'sway-xdg-config
                    home-xdg-configuration-files-service-type
-                   `(("sway/config"
-                      ,(with-wallpaper "sway-config" (local-file "files/sway-config")))
-                     ("waybar/config.jsonc"
-                      ,(local-file "files/waybar-config.jsonc"))
-                     ("waybar/style.css"
-                      ,(local-file "files/waybar-style.css"))
-                     ("waybar/rose-pine.css"
-                      ,(local-file "files/waybar-rose-pine.css"))
-                     ("waybar/power_menu.xml"
-                      ,(local-file "files/waybar-power_menu.xml"))
-                     ("waybar/wifimenu"
-                      ,(executable-file "wifimenu" (local-file "files/waybar-wifimenu")))
-                     ("waybar/wofi-bluetooth"
-                      ,(executable-file "wofi-bluetooth" (local-file "files/waybar-wofi-bluetooth")))
-                     ("wofi/style.css"
-                      ,(plain-file "wofi-style.css"
-                                   "\
-window {
-    margin: 0px;
-    background-color: #191724;
-    border-radius: 0px;
-    border: 2px solid #eb6f92;
-    color: #e0def4;
-    font-family: 'FiraCode Nerd Font', 'Unifont Upper', 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'Noto Sans';
-    font-size: 20px;
-}
-
-#input {
-    margin: 5px;
-    border-radius: 0px;
-    border: none;
-    color: #eb6f92;
-    background-color: #26233a;
-}
-
-#inner-box {
-    margin: 5px;
-    border: none;
-    background-color: #26233a;
-    color: #e0def4;
-    border-radius: 0px;
-}
-
-#outer-box {
-    margin: 15px;
-    border: none;
-    background-color: #191724;
-}
-
-#scroll {
-    margin: 0px;
-    border: none;
-}
-
-#text {
-    margin: 5px;
-    border: none;
-    color: #e0def4;
-}
-
-#entry:selected {
-    background-color: #eb6f92;
-    color: #191724;
-    border-radius: 0px;
-    outline: none;
-}
-
-#entry:selected * {
-    background-color: #eb6f92;
-    color: #191724;
-    border-radius: 0px;
-    outline: none;
-}
-"))
-                     ("rofimoji.rc"
+                   `(("rofimoji.rc"
                       ,(plain-file "rofimoji.rc"
                                    "\
 selector = wofi
 selector-args = --columns 8
 action = copy
 skin-tone = light
-"))
-                     ("mako/config"
-                      ,(local-file "files/mako-config"))
-                     ("foot/foot.ini"
-                      ,(local-file "files/foot.ini"))
-                     ("swaylock/config"
-                      ,(with-wallpaper "swaylock-config" (local-file "files/swaylock-config")))))))
+"))))
+
+   (symlink-home-service 'sway-config-symlink
+                         "/.config/sway/config"
+                         "/Projects/guix-system/home/files/sway-config")
+
+   (symlink-home-service 'foot-config-symlink
+                         "/.config/foot/foot.ini"
+                         "/Projects/guix-system/home/files/foot.ini")
+
+   (symlink-home-service 'noctalia-config-symlink
+                         "/.config/noctalia/config.toml"
+                         "/Projects/guix-system/home/files/noctalia-config.toml")
+
+   (simple-service 'qt6ct-color-scheme
+                   home-activation-service-type
+                   #~(begin
+                       (use-modules (ice-9 textual-ports))
+                       (let* ((home  (getenv "HOME"))
+                            (conf  (string-append home "/.config/qt6ct/qt6ct.conf"))
+                            (value (string-append home "/.local/share/color-schemes/noctalia.colors"))
+                            (entry (string-append "color_scheme_path=" value)))
+                       (when (file-exists? conf)
+                         (let* ((lines    (string-split
+                                           (call-with-input-file conf get-string-all)
+                                           #\newline))
+                                (has-key? (let lp ((ls lines))
+                                            (and (pair? ls)
+                                                 (or (string-prefix? "color_scheme_path=" (car ls))
+                                                     (lp (cdr ls))))))
+                                (new-lines
+                                 (if has-key?
+                                     (map (lambda (l)
+                                            (if (string-prefix? "color_scheme_path=" l) entry l))
+                                          lines)
+                                     (let lp ((ls lines) (acc '()))
+                                       (if (null? ls)
+                                           (reverse acc)
+                                           (let ((l (car ls)))
+                                             (if (string=? l "[Appearance]")
+                                                 (lp (cdr ls) (cons entry (cons l acc)))
+                                                 (lp (cdr ls) (cons l acc)))))))))
+                           (call-with-output-file conf
+                             (lambda (port)
+                               (display (string-join new-lines "\n") port))))))))))
 

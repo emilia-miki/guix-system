@@ -36,8 +36,6 @@
   #:use-module (guix gexp)
   #:use-module (packages audacity)
   #:use-module (packages claude-code)
-  #:use-module (packages helix)
-  #:use-module (packages relax-player)
   #:use-module (local)
   #:export (%tools-services))
 
@@ -72,7 +70,7 @@
                     ;; media processing
                     ffmpeg yt-dlp cava mpv audacity-wayland
                     ;; other
-                    relax-player claude-code helix-steel))
+                    claude-code))
 
    (simple-service 'hydroxide
                    home-shepherd-service-type

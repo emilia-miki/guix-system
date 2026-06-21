@@ -9,6 +9,7 @@
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (local)
+  #:use-module (home utils)
   #:export (%emacs-services))
 
 (define-public %emacs-services
@@ -67,12 +68,6 @@
                       ,(mixed-text-file "local-mail.el"
                                         "(setq user-mail-address \"" %protonmail-address "\")\n"))))
 
-   (simple-service 'emacs-init-symlink
-                   home-activation-service-type
-                   #~(let* ((home   (getenv "HOME"))
-                            (link   (string-append home "/.config/emacs/init.el"))
-                            (target (string-append home "/Projects/guix-system/home/files/emacs-init.el")))
-                       (mkdir-p (string-append home "/.config/emacs"))
-                       (when (file-exists? link)
-                         (delete-file link))
-                       (symlink target link)))))
+   (symlink-home-service 'emacs-init-symlink
+                         "/.config/emacs/init.el"
+                         "/Projects/guix-system/home/files/emacs-init.el")))

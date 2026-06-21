@@ -2,6 +2,7 @@
   #:use-module (gnu home services)
   #:use-module (gnu services)
   #:use-module (guix gexp)
+  #:use-module (home utils)
   #:export (%shell-services))
 
 (define-public %shell-services
@@ -65,11 +66,8 @@ use_guix() {
 use_venv() {
     source .venv/bin/activate
 }
-"))
-                     ("starship.toml"
-                      ,(plain-file "starship.toml"
-                                   "\
-[character]
-success_symbol = '[λ](bold green)'
-error_symbol = '[λ](bold red)'
-"))))))
+"))))
+
+   (symlink-home-service 'starship-config-symlink
+                         "/.config/starship.toml"
+                         "/Projects/guix-system/home/files/starship.toml")))

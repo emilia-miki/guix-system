@@ -15,13 +15,10 @@
   #:use-module (home emacs)
   #:use-module (home env)
   #:use-module (home fcitx5)
-  #:use-module (home helix)
   #:use-module (home shell)
   #:use-module (home ssh)
   #:use-module (home sway)
-  #:use-module (home theme)
-  #:use-module (home tools)
-  #:use-module (home wallpaper))
+  #:use-module (home tools))
 
 (home-environment
  (inherit asahi-home-environment)
@@ -57,11 +54,9 @@
 
    %sway-services
    %env-services
-   %theme-services
    %shell-services
    %emacs-services
    %tools-services
-   %helix-services
    %fcitx5-services
    %apps-services
    %ssh-services
