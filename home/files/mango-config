@@ -7,6 +7,8 @@ xkb_rules_options=ctrl:hyper_capscontrol
 tap_to_click=1
 disable_while_typing=0
 trackpad_natural_scrolling=1
+click_method=2
+middle_button_emulation=1
 
 ### Output
 monitorrule=name:eDP-1,scale:1.5
@@ -14,6 +16,7 @@ monitorrule=name:eDP-1,scale:1.5
 ### Appearance
 focus_on_activate=0
 borderpx=2
+animations=0
 tab_bar_height=24
 tab_bar_decorate_font_desc=Sarasa Term J 10
 tab_bar_decorate_border_width=1

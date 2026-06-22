@@ -53,7 +53,7 @@
                    home-profile-service-type
                    (list
                     ;; Core compositor & shell
-                    mangowm-git noctalia-patched adw-gtk3-theme qt6ct-kde brightnessctl
+                    mangowm-git noctalia-patched adw-gtk3-theme qt6ct-kde brightnessctl wl-clipboard
                     ;; Terminal
                     foot
                     ;; PolicyKit agent
