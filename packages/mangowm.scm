@@ -41,7 +41,18 @@
                 (("is_nixos = false")
                  "is_nixos = true")
                 (("'-DSYSCONFDIR=\\\"@0@\\\"'.format\\('/etc'\\)")
-                 "'-DSYSCONFDIR=\"@0@\"'.format(sysconfdir)")))))))
+                 "'-DSYSCONFDIR=\"@0@\"'.format(sysconfdir)"))))
+          (add-after 'patch-meson 'fix-tab-bar-hidpi
+            (lambda _
+              ;; Both callers of mango_tab_bar_node_update hardcode scale=1.0,
+              ;; causing blurry tab bar text on HiDPI displays.  Use the actual
+              ;; output scale instead.
+              (substitute* "src/action/client.h"
+                (("mango_tab_bar_node_update\\(c->tab_bar_node, client_get_title\\(c\\), 1\\.0\\);")
+                 "mango_tab_bar_node_update(c->tab_bar_node, client_get_title(c), c->mon ? c->mon->wlr_output->scale : 1.0f);"))
+              (substitute* "src/mango.c"
+                (("mango_tab_bar_node_update\\(c->tab_bar_node, title, 1\\.0\\);")
+                 "mango_tab_bar_node_update(c->tab_bar_node, title, c->mon ? c->mon->wlr_output->scale : 1.0f);")))))))
     (inputs
      (list wayland
            libinput

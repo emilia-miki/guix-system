@@ -1,7 +1,5 @@
 # MangoWM configuration
-# Ported from sway-config — see home/files/sway-config for the sway version
 
-cursor_size=24
 cursor_theme=Adwaita
 
 ### Input
@@ -15,11 +13,16 @@ monitorrule=name:eDP-1,scale:1.5
 
 ### Appearance
 focus_on_activate=0
-border_width=2
-gaps_inner=5
-tab_bar_height=22
+borderpx=2
+tab_bar_height=24
 tab_bar_decorate_font_desc=Sarasa Term J 10
-tab_bar_decorate_border_width=2
+tab_bar_decorate_border_width=1
+tab_bar_decorate_padding_x=8
+tab_bar_decorate_padding_y=3
+tab_bar_decorate_bg_color=0x191724ff
+tab_bar_decorate_focus_bg_color=0x26233aff
+tab_bar_decorate_border_color=0x656182ff
+tab_bar_decorate_corner_radius=0
 
 ### Autostart
 exec-once=dbus-update-activation-environment --all

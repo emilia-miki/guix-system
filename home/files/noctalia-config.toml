@@ -5,8 +5,11 @@ enable_sounds = true
 center = [ "audio_visualizer", "media", "cat" ]
 end = [ "notifications", "bluetooth", "volume", "network", "brightness", "battery", "control-center", "clock", "session" ]
 font_weight = 400
-margin_ends = 10
+margin_edge = 8
+margin_ends = 8
 padding = 12
+radius = 8
+thickness = 32
 widget_spacing = 12
 
 [desktop_widgets]
@@ -107,7 +110,7 @@ format = "{:%Y年%m月%d日 %H:%M}"
 
 [widget.media]
 hide_when_no_media = true
-max_length = 600
+max_length = 320
 
 [widget.workspaces]
 display = "id"
