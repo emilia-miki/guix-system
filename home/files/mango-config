@@ -14,6 +14,7 @@ trackpad_natural_scrolling=1
 monitorrule=name:eDP-1,scale:1.5
 
 ### Appearance
+focus_on_activate=0
 border_width=2
 gaps_inner=5
 tab_bar_height=22

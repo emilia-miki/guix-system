@@ -17,6 +17,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages telegram)
   #:use-module (gnu packages unicode)
   #:use-module (gnu packages video)
@@ -44,7 +45,7 @@
                     ;; browsers
                     librewolf ungoogled-chromium/wayland
                     ;; media
-                    feishin obs
+                    feishin obs helvum
                     ;; viewers
                     imv
                     ;; file management
