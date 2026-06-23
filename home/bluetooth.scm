@@ -22,9 +22,10 @@
                     (use-modules (ice-9 popen) (ice-9 rdelim))
 
                     (define (connect-a2dp!)
-                      (sleep 1) ; let BlueZ settle after the connection event
+                      (sleep 2)
                       (system* #$(file-append dbus "/bin/dbus-send")
                                "--system"
+                               "--print-reply"
                                "--dest=org.bluez"
                                #$%aventho-device-path
                                "org.bluez.Device1.ConnectProfile"
@@ -35,12 +36,12 @@
                                  #$(file-append (gexp-input glib "bin") "/bin/gdbus")
                                  "monitor"
                                  "--system"
-                                 "--dest" "org.bluez"
-                                 "--object-path" #$%aventho-device-path)))
+                                 "--dest" "org.bluez")))
                       (let loop ()
                         (let ((line (read-line port)))
                           (unless (eof-object? line)
-                            (when (and (string-contains line "Connected")
+                            (when (and (string-contains line #$%aventho-device-path)
+                                       (string-contains line "ServicesResolved")
                                        (string-contains line "<true>"))
                               (connect-a2dp!))
                             (loop))))))))
