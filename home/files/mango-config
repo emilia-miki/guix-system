@@ -48,7 +48,15 @@ windowrule=tags:2,appid:org.telegram.desktop
 windowrule=tags:3,appid:emacs
 
 ### Tag layout defaults
-tagrule=id:2,layout_name:monocle
+tagrule=id:1,name:一
+tagrule=id:2,name:二,layout_name:monocle
+tagrule=id:3,name:三
+tagrule=id:4,name:四
+tagrule=id:5,name:五
+tagrule=id:6,name:六
+tagrule=id:7,name:七
+tagrule=id:8,name:八
+tagrule=id:9,name:九
 
 ### Keybindings
 # Basics

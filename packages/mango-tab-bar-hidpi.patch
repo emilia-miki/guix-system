@@ -1,0 +1,23 @@
+Both callers of mango_tab_bar_node_update hardcode scale=1.0, causing
+blurry tab bar text on HiDPI displays.  Use the actual output scale instead.
+
+--- a/src/action/client.h
++++ b/src/action/client.h
+@@ -118,5 +118,5 @@
+ 		mangonodedata, layers[LyrDecorate], config.tabdata, 0, 0);
+ 	wlr_scene_node_lower_to_bottom(&c->tab_bar_node->scene_buffer->node);
+ 	wlr_scene_node_set_enabled(&c->tab_bar_node->scene_buffer->node, false);
+-	mango_tab_bar_node_update(c->tab_bar_node, client_get_title(c), 1.0);
++	mango_tab_bar_node_update(c->tab_bar_node, client_get_title(c), c->mon ? c->mon->wlr_output->scale : 1.0f);
+ }
+--- a/src/mango.c
++++ b/src/mango.c
+@@ -6736,7 +6736,7 @@
+
+ 	const char *title;
+ 	title = client_get_title(c);
+-	mango_tab_bar_node_update(c->tab_bar_node, title, 1.0);
++	mango_tab_bar_node_update(c->tab_bar_node, title, c->mon ? c->mon->wlr_output->scale : 1.0f);
+ 	if (title && c->foreign_toplevel)
+ 		wlr_foreign_toplevel_handle_v1_set_title(c->foreign_toplevel, title);
+ 	if (c == focustop(c->mon))

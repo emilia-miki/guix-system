@@ -40,4 +40,8 @@
         (name 'noctalia)
         (url "https://github.com/noctalia-dev/noctalia")
         (branch "main"))
+       (channel
+        (name 'mangowm)
+        (url "https://github.com/mangowm/mango.git")
+        (branch "main"))
        %default-channels)

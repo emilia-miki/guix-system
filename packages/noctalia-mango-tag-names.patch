@@ -1,0 +1,32 @@
+Read the "name" field from the mango JSON IPC tag objects and use it as the
+workspace display name, falling back to the numeric index when absent.
+
+--- a/src/compositors/mango/mango_workspace_backend.h
++++ b/src/compositors/mango/mango_workspace_backend.h
+@@ -50,6 +50,7 @@ public:
+ private:
+   struct TagInfo {
+     std::uint32_t index = 0;
++    std::string name;
+     bool active = false;
+     bool urgent = false;
+     bool occupied = false;
+--- a/src/compositors/mango/mango_workspace_backend.cpp
++++ b/src/compositors/mango/mango_workspace_backend.cpp
+@@ -544,7 +544,7 @@ std::optional<std::size_t> MangoWorkspaceBackend::shellActiveTagIndex(const std:
+ Workspace MangoWorkspaceBackend::makeWorkspace(const TagInfo& tag, bool shellActive) {
+   return Workspace{
+       .id = std::to_string(tag.index),
+-      .name = std::to_string(tag.index),
++      .name = tag.name.empty() ? std::to_string(tag.index) : tag.name,
+       .coordinates = {tag.index > 0 ? tag.index - 1 : 0},
+       .index = tag.index,
+       .active = shellActive,
+@@ -582,6 +582,7 @@ std::optional<MangoWorkspaceBackend::OutputState> MangoWorkspaceBackend::parseMo
+       }
+       TagInfo tag{};
+       tag.index = static_cast<std::uint32_t>(jsonInt(tagJson, "index"));
++      tag.name = jsonString(tagJson, "name");
+       tag.active = jsonBool(tagJson, "is_active");
+       tag.urgent = jsonBool(tagJson, "is_urgent");
+       tag.occupied = jsonInt(tagJson, "client_count") > 0;

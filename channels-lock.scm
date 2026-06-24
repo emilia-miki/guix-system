@@ -1,8 +1,13 @@
 (list (channel
+       (name 'mangowm)
+       (url "https://github.com/mangowm/mango.git")
+       (branch "main")
+       (commit "8216cacb3b0f7c1de7bec6abd4be8b5acfe94b8e"))
+      (channel
        (name 'noctalia)
        (url "https://github.com/noctalia-dev/noctalia")
        (branch "main")
-       (commit "7584f938dcf309f561309202cbb328c8f0c47c34"))
+       (commit "74fc383681641691025418b3f9d32bd624dc394e"))
       (channel
        (name 'asahi)
        (url "https://codeberg.org/asahi-guix/channel")
