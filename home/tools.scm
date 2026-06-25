@@ -96,14 +96,29 @@
                       ,(local-file "files/tmux.conf"))
                      ("git/ignore"
                       ,(plain-file "gitignore" "**/.claude/\n"))
+                     ("git/work"
+                      ,(mixed-text-file "git-work"
+                                        "[user]\n"
+                                        "\tname = " %work-name "\n"
+                                        "\temail = " %work-email "\n"))
                      ("git/config"
                       ,(mixed-text-file "gitconfig"
                                         "[user]\n"
                                         "\tname = Emilia Miki\n"
                                         "\temail = " %protonmail-address "\n"
+                                        "\tsigningKey = 2F6C57E4CE1AF011644AA68873695055BC885C2B\n"
+                                        "\n"
+                                        "[gpg]\n"
+                                        "\tformat = openpgp\n"
+                                        "\n"
+                                        "[commit]\n"
+                                        "\tgpgsign = true\n"
                                         "\n"
                                         "[init]\n"
                                         "\tdefaultBranch = main\n"
                                         "\n"
                                         "[core]\n"
-                                        "\texcludesFile = ~/.config/git/ignore\n"))))))
+                                        "\texcludesFile = ~/.config/git/ignore\n"
+                                        "\n"
+                                        "[includeIf \"gitdir:~/Projects/work/\"]\n"
+                                        "\tpath = ~/.config/git/work\n"))))))

@@ -406,6 +406,10 @@
   (setq user-full-name "Emilia Miki")
   (load (expand-file-name "~/.config/emacs/local-mail.el") t)
 
+  ;; GPG signing — C-c C-m C-s in compose buffer to sign a message
+  (setq mml-secure-openpgp-sign-with-sender t
+        epg-pinentry-mode 'default)
+
   :bind ("C-c M" . mu4e))
 
 ;; ── IRC ───────────────────────────────────────────────────────────

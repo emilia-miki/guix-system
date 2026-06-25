@@ -2,6 +2,8 @@
   #:use-module (gnu services base)
   #:export (%protonmail-address
             %local-hosts
+            %work-name
+            %work-email
             %work-ssh-hostname
             %work-ssh-user
             %thinkcentre-ssh-hostname
@@ -20,6 +22,9 @@
   (list
     (host "1.2.3.4" "server.example.com")
     (host "100.x.x.x" "mymachine")))
+
+(define-public %work-name "Your Name")
+(define-public %work-email "you@work.example.com")
 
 (define-public %work-ssh-hostname "192.168.x.x")
 (define-public %work-ssh-user "username")
