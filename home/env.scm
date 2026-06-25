@@ -12,8 +12,12 @@
                      ("VISUAL" . "emacsclient -nw")
 
                      ;; wayland
+                     ("XDG_CURRENT_DESKTOP" . "mango:wlroots")
                      ("QT_QPA_PLATFORM" . "wayland")
                      ("GDK_BACKEND"     . "wayland,x11")
 
                      ;; build tools
-                     ("ACLOCAL_PATH" . "$HOME/.guix-home/profile/share/aclocal:/run/current-system/profile/share/aclocal")))))
+                     ("ACLOCAL_PATH" . "$HOME/.guix-home/profile/share/aclocal:/run/current-system/profile/share/aclocal")
+
+                     ;; flatpak apps visible to launchers
+                     ("XDG_DATA_DIRS" . "/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS")))))

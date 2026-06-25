@@ -26,6 +26,8 @@ fi
                      (".bashrc"
                       ,(plain-file "bashrc"
                                    "\
+[[ $- == *i* ]] || return
+
 eval \"$(starship init bash)\"
 eval \"$(zoxide init bash)\"
 eval \"$(direnv hook bash)\"

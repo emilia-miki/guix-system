@@ -80,13 +80,15 @@
                      (start #~(make-forkexec-constructor
                                (list #$(file-append hydroxide "/bin/hydroxide")
                                      "smtp")))
-                     (stop #~(make-kill-destructor)))
+                     (stop #~(make-kill-destructor))
+                     (respawn? #t))
                     (shepherd-service
                      (provision '(hydroxide-imap))
                      (start #~(make-forkexec-constructor
                                (list #$(file-append hydroxide "/bin/hydroxide")
                                      "imap")))
-                     (stop #~(make-kill-destructor)))))
+                     (stop #~(make-kill-destructor))
+                     (respawn? #t))))
 
    (simple-service 'tools-xdg-config
                    home-xdg-configuration-files-service-type

@@ -133,10 +133,6 @@ skin-tone = light
                          "/.config/mango/config.conf"
                          "/Projects/guix-system/home/files/mango-config")
 
-   (symlink-home-service 'sway-config-symlink
-                         "/.config/sway/config"
-                         "/Projects/guix-system/home/files/sway-config")
-
    (symlink-home-service 'foot-config-symlink
                          "/.config/foot/foot.ini"
                          "/Projects/guix-system/home/files/foot.ini")

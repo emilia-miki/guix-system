@@ -25,15 +25,6 @@
           (openpgp-fingerprint
            "9E53 FC33 B832 8C74 5E7B 31F7 0226 C10D 7877 B741"))))
        (channel
-        (name 'sijo)
-        (url "https://git.sr.ht/~simendsjo/dotfiles")
-        (branch "main")
-        (introduction
-         (make-channel-introduction
-          "c352f7331b1722b2ffb964572c7f7fbec585bd2f"
-          (openpgp-fingerprint
-           "B0F2 D6C5 2936 95FD 57B5  D255 77BC 6345 B65D 6CFB"))))
-       (channel
         (name 'ollama-guix)
         (url "https://codeberg.org/tusharhero/ollama-guix"))
        (channel

@@ -17,7 +17,7 @@
                 (forward-agent? #t)
                 (extra-content "\
 ControlMaster auto
-ControlPath ~/.ssh/master-%h:%p
+ControlPath ~/.ssh/master-%C
 ControlPersist 10m
 ServerAliveInterval 60"))
                (openssh-host
