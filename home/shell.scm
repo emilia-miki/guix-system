@@ -32,7 +32,7 @@ eval \"$(starship init bash)\"
 eval \"$(zoxide init bash)\"
 eval \"$(direnv hook bash)\"
 
-export PATH=\"$HOME/.local/bin:$HOME/.cargo/bin:$PATH\"
+export PATH=\"$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.local/share/qlot/qlot/bin:$PATH\"
 
 alias emacs=\"emacsclient -nw\"
 alias em=\"emacsclient -nw\"

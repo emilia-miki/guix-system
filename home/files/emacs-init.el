@@ -116,7 +116,10 @@
 
 ;; ── Common Lisp ────────────────────────────────────────────────────
 (use-package sly
-  :config (setq inferior-lisp-program "sbcl"))
+  :config (setq inferior-lisp-program "sbcl"
+                sly-lisp-implementations
+                '((sbcl ("sbcl"))
+                  (qlot ("qlot" "exec" "sbcl")))))
 
 (use-package paredit
   :hook ((lisp-mode       . paredit-mode)

@@ -4,7 +4,6 @@
   #:use-module (gnu home services)
   #:use-module (gnu home services xdg)
   #:use-module (gnu packages bittorrent)
-  #:use-module (gnu packages chromium)
   #:use-module (gnu packages firmware)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages games)
@@ -27,6 +26,7 @@
   #:use-module (packages blender)
   #:use-module (packages feishin)
   #:use-module (packages libreoffice)
+  #:use-module (packages pinned)
   #:use-module (packages preview-app)
   #:export (%apps-services))
 
@@ -43,7 +43,7 @@
                    home-profile-service-type
                    (list
                     ;; browsers
-                    librewolf ungoogled-chromium/wayland
+                    librewolf ungoogled-chromium-wayland/pinned
                     ;; media
                     feishin obs helvum
                     ;; viewers
@@ -51,9 +51,12 @@
                     ;; file management
                     dolphin ark udiskie
                     ;; office
-                    libreoffice-aarch64 preview-app
+                    ;; libreoffice-aarch64  ; no aarch64 substitutes, builds from source
+                    preview-app
                     ;; graphics
-                    gimp blender-wayland
+                    ;; blender-wayland  ; libheif rewrite forks openimageio off the
+                    ;; substitutable graph; serial aarch64 build takes hours
+                    gimp
                     ;; network/remote
                     wireshark remmina qbittorrent moonlight-qt telegram-desktop
                     ;; other

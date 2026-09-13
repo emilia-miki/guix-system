@@ -19,6 +19,7 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages pdf)
@@ -54,13 +55,13 @@
                     ;; process/env management
                     direnv tmux
                     ;; search/navigation
-                    ripgrep ripgrep-all eza bat fd gitui
+                    ripgrep ripgrep-all eza bat fd
                     starship tokei zoxide hyperfine
                     ;; language runtimes & toolchains
                     rust rust-analyzer
                     (list isc-bind "utils")
                     uv patchelf
-                    go gopls ruff python
+                    go gopls ruff python sbcl
                     ;; build tools
                     gcc-toolchain autoconf automake gnu-make
                     libtool cmake clang pkg-config unzip typst markdown
