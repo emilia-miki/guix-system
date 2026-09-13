@@ -251,7 +251,32 @@
 ;; ── Terminal emulator/shell stuff ──────────────────────────────────
 (use-package eat
   :custom (eat-term-name "xterm-256color")
-  :config (ignore-errors (eat-eshell-mode 1)))
+  :config
+  ;; Keep every visible eat terminal sized to exactly fill its window.
+  ;; eat's built-in resize latches to the SMALLEST window that ever showed the
+  ;; buffer (Emacs' default) and, once settled, sizes to `window-body-height'
+  ;; which sits a few rows short of `window-screen-lines' (the metric eat uses
+  ;; at launch). The upshot: full-screen TUIs like Claude Code get stuck
+  ;; rendering into a strip at the top after you split/rearrange windows.
+  ;; Force a refit to the full window on every layout/size change.
+  (setq window-adjust-process-window-size-function
+        #'window-adjust-process-window-size-largest)
+  (defun my/eat-fit-to-window (&rest _)
+    "Resize every visible eat terminal to exactly fill its window."
+    (dolist (win (window-list nil 'no-minibuf))
+      (with-selected-window win
+        (when (bound-and-true-p eat-terminal)
+          (let ((w (window-max-chars-per-line))
+                (h (floor (window-screen-lines))))
+            (when (and (> w 0) (> h 0)
+                       (not (equal (eat-term-size eat-terminal) (cons w h))))
+              (eat-term-resize eat-terminal w h)
+              (eat-term-redisplay eat-terminal)
+              (when-let* ((proc (get-buffer-process (current-buffer))))
+                (set-process-window-size proc h w))))))))
+  (add-hook 'window-configuration-change-hook #'my/eat-fit-to-window)
+  (add-hook 'window-size-change-functions #'my/eat-fit-to-window)
+  (ignore-errors (eat-eshell-mode 1)))
 (defun eshell/clear ()
   (let ((inhibit-read-only t))
     (erase-buffer)))

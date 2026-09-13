@@ -100,7 +100,13 @@
                       ,(mixed-text-file "git-work"
                                         "[user]\n"
                                         "\tname = " %work-name "\n"
-                                        "\temail = " %work-email "\n"))
+                                        "\temail = " %work-email "\n"
+                                        "\n"
+                                        "[commit]\n"
+                                        "\tgpgsign = false\n"
+                                        "\n"
+                                        "[tag]\n"
+                                        "\tgpgsign = false\n"))
                      ("git/config"
                       ,(mixed-text-file "gitconfig"
                                         "[user]\n"

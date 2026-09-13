@@ -12,7 +12,7 @@
                      ("VISUAL" . "emacsclient -nw")
 
                      ;; wayland
-                     ("WAYLAND_DISPLAY"      . "wayland-0")
+                     ;; ("WAYLAND_DISPLAY"      . "wayland-0")
                      ("XDG_CURRENT_DESKTOP"  . "mango:wlroots")
                      ("QT_QPA_PLATFORM"      . "wayland")
                      ("GDK_BACKEND"          . "wayland,x11")

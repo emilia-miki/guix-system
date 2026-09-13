@@ -1,13 +1,60 @@
+Add optional tag names in mango config via tagrule=id:N,name:X.
+Falls back to numbered defaults when no name is set.
+Also adds 'rename tag <index> <name>' IPC command for runtime renaming.
 
-this feature adds optional tag names in mango config, specified using the name key.
-if name is not specified, the default arabic numerals are used.
----
- src/config/parse_config.h        | 16 ++++++++++++++++
- src/ext-protocol/ext-workspace.h |  6 +++---
- src/ipc/ipc.h                    |  1 +
- 3 files changed, 20 insertions(+), 3 deletions(-)
-
+diff --git a/docs/ipc.md b/docs/ipc.md
+index 0bdcc0b..32b81b0 100644
+--- a/docs/ipc.md
++++ b/docs/ipc.md
+@@ -67,6 +67,17 @@ mmsg watch all-monitors
+ mmsg watch all-tags
+ ```
+ 
++### RENAME
++| Command | Description |
++| :--- | :--- |
++| `rename tag <index> <name>` | Renames a tag at runtime. Updates the in-memory config, the ext-workspace-v1 protocol name, and notifies all IPC watchers. The name may contain spaces. |
++
++*Example:*
++```bash
++mmsg rename tag 1 web
++mmsg rename tag 2 my projects
++```
++
+ ### DISPATCH
+ Allows sending commands to the compositor to alter its state.
+ * `dispatch <func_name>,[args...] [client,<id>]`
+diff --git a/mmsg/mmsg.1 b/mmsg/mmsg.1
+index 2449e6e..f4a3f16 100644
+--- a/mmsg/mmsg.1
++++ b/mmsg/mmsg.1
+@@ -74,6 +74,24 @@ Examples:
+ .IP \(bu 2
+ \fBmmsg dispatch movewin,10,100 client,4\fR
+ .RE
++.SS "Rename commands"
++.TP
++\fBrename tag\fR <index> <name>
++Rename a tag at runtime.
++\fIindex\fR is the 1-based tag number.
++\fIname\fR may contain spaces.
++The change is reflected immediately in the ext-workspace-v1 protocol and in all
++active IPC watch streams.
++Survives \fBreload_config\fR only if also set via \fBtagrule=id:<index>,name:<name>\fR
++in the config file.
++.br
++Example:
++.RS
++.IP \(bu 2
++\fBmmsg rename tag 1 web\fR
++.IP \(bu 2
++\fBmmsg rename tag 2 my projects\fR
++.RE
+ .SS "Persistent streams (watch)"
+ \fBWatch\fR commands keep the connection open and continuously output JSON
+ updates. The initial state is sent immediately, followed by updates whenever
 diff --git a/src/config/parse_config.h b/src/config/parse_config.h
+index 61af421..1f3e2d9 100644
 --- a/src/config/parse_config.h
 +++ b/src/config/parse_config.h
 @@ -160,6 +160,7 @@ typedef struct {
@@ -59,6 +106,7 @@ diff --git a/src/config/parse_config.h b/src/config/parse_config.h
 +	return NULL;
 +}
 diff --git a/src/ext-protocol/ext-workspace.h b/src/ext-protocol/ext-workspace.h
+index eea0f45..c223078 100644
 --- a/src/ext-protocol/ext-workspace.h
 +++ b/src/ext-protocol/ext-workspace.h
 @@ -100,9 +100,9 @@ static void handle_ext_commit(struct wl_listener *listener, void *data) {
@@ -74,7 +122,17 @@ diff --git a/src/ext-protocol/ext-workspace.h b/src/ext-protocol/ext-workspace.h
  }
  
  void destroy_workspace(struct workspace *workspace) {
+@@ -155,6 +155,8 @@ void dwl_ext_workspace_printstatus(Monitor *m) {
+ 	wl_list_for_each(w, &workspaces, link) {
+ 		if (w && w->m == m) {
+ 
++			wlr_ext_workspace_handle_v1_set_name(w->ext_workspace,
++				get_name_from_tag(w->tag));
+ 			tag_status = get_tag_status(w->tag, m);
+ 			if (tag_status == 2) {
+ 				wlr_ext_workspace_handle_v1_set_hidden(w->ext_workspace, false);
 diff --git a/src/ipc/ipc.h b/src/ipc/ipc.h
+index 03e0746..bb918d0 100644
 --- a/src/ipc/ipc.h
 +++ b/src/ipc/ipc.h
 @@ -99,6 +99,7 @@ static cJSON *build_tags_json(Monitor *m) {
@@ -85,4 +143,48 @@ diff --git a/src/ipc/ipc.h b/src/ipc/ipc.h
  		cJSON_AddBoolToObject(tag_obj, "is_active", is_active);
  		cJSON_AddBoolToObject(tag_obj, "is_urgent", is_urgent);
  		cJSON_AddStringToObject(tag_obj, "layout",
-
+@@ -351,6 +352,44 @@ static void handle_command(int client_fd, const char *cmd_raw) {
+ 			return;
+ 		}
+ 		resp = build_monitor_tags_response(m);
++	} else if (strncmp(cmd, "rename tag ", 11) == 0) {
++		char *rest = (char *)(cmd + 11);
++		char *endptr;
++		long tag_index = strtol(rest, &endptr, 10);
++		if (endptr == rest || *endptr != ' ' ||
++				tag_index < 1 || tag_index > (int)LENGTH(tags)) {
++			send_static_json(client_fd, "{\"error\":\"usage: rename tag <index> <name>\"}\n");
++			return;
++		}
++		const char *new_name = endptr + 1;
++		if (*new_name == '\0') {
++			send_static_json(client_fd, "{\"error\":\"usage: rename tag <index> <name>\"}\n");
++			return;
++		}
++		/* Update existing rule if present, otherwise append a new one */
++		bool found = false;
++		for (int i = 0; i < config.tag_rules_count; i++) {
++			if (config.tag_rules[i].id == (int)tag_index) {
++				free(config.tag_rules[i].name);
++				config.tag_rules[i].name = strdup(new_name);
++				found = true;
++				break;
++			}
++		}
++		if (!found) {
++			config.tag_rules = realloc(config.tag_rules,
++				(config.tag_rules_count + 1) * sizeof(ConfigTagRule));
++			ConfigTagRule *rule = &config.tag_rules[config.tag_rules_count];
++			memset(rule, 0, sizeof(ConfigTagRule));
++			rule->id = (int)tag_index;
++			rule->name = strdup(new_name);
++			config.tag_rules_count++;
++		}
++		/* ext-workspace-v1 names are refreshed via printstatus below, which
++		   triggers dwl_ext_workspace_printstatus and calls set_name on each handle */
++		printstatus(IPC_WATCH_ARRANGGE);
++		resp = cJSON_CreateObject();
++		cJSON_AddBoolToObject(resp, "success", true);
+ 	} else if (strncmp(cmd, "dispatch ", 9) == 0) {
+ 		char *dispatch_copy = strdup(cmd_raw + 9);
+ 		char *out = dispatch_copy, *ptr = dispatch_copy;
