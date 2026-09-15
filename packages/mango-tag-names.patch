@@ -1,12 +1,14 @@
-Add optional tag names in mango config via tagrule=id:N,name:X.
-Falls back to numbered defaults when no name is set.
-Also adds 'rename tag <index> <name>' IPC command for runtime renaming.
+Add optional tag names in mango config via tagrule=id:N,name:X, falling back
+to the numbered defaults, and a 'rename tag <index> <name>' IPC command.
+Tag names are exposed in mmsg tag JSON ("name") and as ext-workspace-v1 names.
+Port of https://github.com/mangowm/mango/pull/1092 to the post-2026-09-06
+source layout (tested against e2b9ca85).
 
 diff --git a/docs/ipc.md b/docs/ipc.md
-index 0bdcc0b..32b81b0 100644
+index 2fe1080b..9ec7e11d 100644
 --- a/docs/ipc.md
 +++ b/docs/ipc.md
-@@ -67,6 +67,17 @@ mmsg watch all-monitors
+@@ -72,6 +72,17 @@ mmsg watch all-monitors
  mmsg watch all-tags
  ```
  
@@ -24,11 +26,34 @@ index 0bdcc0b..32b81b0 100644
  ### DISPATCH
  Allows sending commands to the compositor to alter its state.
  * `dispatch <func_name>,[args...] [client,<id>]`
-diff --git a/mmsg/mmsg.1 b/mmsg/mmsg.1
-index 2449e6e..f4a3f16 100644
---- a/mmsg/mmsg.1
-+++ b/mmsg/mmsg.1
-@@ -74,6 +74,24 @@ Examples:
+diff --git a/include/mango/config/parse_config.h b/include/mango/config/parse_config.h
+index 54091fea..b02e9b37 100644
+--- a/include/mango/config/parse_config.h
++++ b/include/mango/config/parse_config.h
+@@ -182,6 +182,7 @@ typedef struct {
+ typedef struct {
+ 	int32_t id;
+ 	bool id_wildcard;
++	char *name;
+ 	char *layout_name;
+ 	char *monitor_name;
+ 	char *monitor_make;
+@@ -678,6 +679,10 @@ void tag_slot_set_defaults(Monitor *m, uint32_t tag);
+ 
+ bool tag_rule_matches_monitor(const ConfigTagRule *tr, Monitor *m);
+ 
++const char *get_tag_name(uint32_t tag);
++
++bool set_tag_name(uint32_t tag, const char *name);
++
+ void tag_rule_apply_to_slot(Monitor *m, const ConfigTagRule *tr, uint32_t tag);
+ void set_env_without_display();
+ 
+diff --git a/mmsg/mmsg.1.in b/mmsg/mmsg.1.in
+index 76a2485c..d2bac30d 100644
+--- a/mmsg/mmsg.1.in
++++ b/mmsg/mmsg.1.in
+@@ -84,6 +84,24 @@ Examples:
  .IP \(bu 2
  \fBmmsg dispatch movewin,10,100 client,4\fR
  .RE
@@ -53,37 +78,30 @@ index 2449e6e..f4a3f16 100644
  .SS "Persistent streams (watch)"
  \fBWatch\fR commands keep the connection open and continuously output JSON
  updates. The initial state is sent immediately, followed by updates whenever
-diff --git a/src/config/parse_config.h b/src/config/parse_config.h
-index 61af421..1f3e2d9 100644
---- a/src/config/parse_config.h
-+++ b/src/config/parse_config.h
-@@ -160,6 +160,7 @@ typedef struct {
- 
- typedef struct {
- 	int32_t id;
-+	char *name;
- 	char *layout_name;
- 	char *monitor_name;
- 	char *monitor_make;
-@@ -2183,6 +2184,7 @@ bool parse_option(Config *config, char *key, char *value) {
- 
- 		// 设置默认值
+diff --git a/src/config/parse_config.c b/src/config/parse_config.c
+index f1ffc4ca..6fda1851 100644
+--- a/src/config/parse_config.c
++++ b/src/config/parse_config.c
+@@ -1349,6 +1349,7 @@ bool parse_option(Config *config, char *key, char *value, int line_number) {
+ 		// Sets default values.
  		rule->id = 0;
+ 		rule->id_wildcard = false;
 +		rule->name = NULL;
  		rule->layout_name = NULL;
  		rule->monitor_name = NULL;
  		rule->monitor_make = NULL;
-@@ -2211,6 +2213,8 @@ bool parse_option(Config *config, char *key, char *value) {
- 
- 				if (strcmp(key, "id") == 0) {
- 					rule->id = CLAMP_INT(atoi(val), 0, LENGTH(tags));
+@@ -1383,6 +1384,9 @@ bool parse_option(Config *config, char *key, char *value, int line_number) {
+ 						rule->id_wildcard = false;
+ 						rule->id = CLAMP_INT(atoi(val), 0, LENGTH(tags));
+ 					}
 +				} else if (strcmp(key, "name") == 0) {
++					free(rule->name);
 +					rule->name = strdup(val);
  				} else if (strcmp(key, "layout_name") == 0) {
  					rule->layout_name = strdup(val);
  				} else if (strcmp(key, "monitor_name") == 0) {
-@@ -3300,6 +3304,8 @@ void free_config(void) {
- 	// 释放 tag_rules
+@@ -3455,6 +3459,8 @@ void free_config(void) {
+ 	// Frees tag_rules.
  	if (config.tag_rules) {
  		for (int32_t i = 0; i < config.tag_rules_count; i++) {
 +			if (config.tag_rules[i].name)
@@ -91,97 +109,119 @@ index 61af421..1f3e2d9 100644
  			if (config.tag_rules[i].layout_name)
  				free((void *)config.tag_rules[i].layout_name);
  			if (config.tag_rules[i].monitor_name)
-@@ -4302,3 +4308,13 @@ int32_t reload_config(const Arg *arg) {
- 	printstatus(IPC_WATCH_ARRANGGE);
- 	return 1;
+@@ -4937,3 +4943,52 @@ FuncType parse_func_name(char *func_name, Arg *arg, char *arg_value,
+ 	}
+ 	return func;
  }
 +
-+static const char *get_tag_name(int tag_index) {
-+	for (int i = 0; i < config.tag_rules_count; i++) {
-+		if (config.tag_rules[i].id == tag_index && config.tag_rules[i].name)
-+			return config.tag_rules[i].name;
++/* Name of TAG (1-based): the first non-wildcard tagrule for it that sets
++ * name:, falling back to the preset numeric name. */
++const char *get_tag_name(uint32_t tag) {
++	if (tag < 1 || tag > LENGTH(tags))
++		return NULL;
++	for (int32_t i = 0; i < config.tag_rules_count; i++) {
++		const ConfigTagRule *tr = &config.tag_rules[i];
++		if (!tr->id_wildcard && tr->id == (int32_t)tag && tr->name)
++			return tr->name;
 +	}
-+	if (tag_index >= 1 && tag_index <= (int)LENGTH(tags))
-+		return tags[tag_index - 1];
-+	return NULL;
++	return tags[tag - 1];
 +}
-diff --git a/src/ext-protocol/ext-workspace.h b/src/ext-protocol/ext-workspace.h
-index eea0f45..c223078 100644
---- a/src/ext-protocol/ext-workspace.h
-+++ b/src/ext-protocol/ext-workspace.h
-@@ -100,9 +100,9 @@ static void handle_ext_commit(struct wl_listener *listener, void *data) {
++
++/* Rename TAG at runtime by updating (or appending) its tagrule.  Lasts until
++ * the next config reload unless the config file sets the same name. */
++bool set_tag_name(uint32_t tag, const char *name) {
++	if (tag < 1 || tag > LENGTH(tags) || !name || !*name)
++		return false;
++
++	ConfigTagRule *rule = NULL;
++	for (int32_t i = 0; i < config.tag_rules_count; i++) {
++		if (!config.tag_rules[i].id_wildcard &&
++			config.tag_rules[i].id == (int32_t)tag) {
++			rule = &config.tag_rules[i];
++			break;
++		}
++	}
++
++	if (!rule) {
++		ConfigTagRule *rules =
++			realloc(config.tag_rules,
++					(config.tag_rules_count + 1) * sizeof(ConfigTagRule));
++		if (!rules)
++			return false;
++		config.tag_rules = rules;
++		rule = &config.tag_rules[config.tag_rules_count++];
++		memset(rule, 0, sizeof(*rule));
++		rule->id = (int32_t)tag;
++		rule->scroller_ignore_proportion_single = -1;
++	}
++
++	char *copy = strdup(name);
++	if (!copy)
++		return false;
++	free(rule->name);
++	rule->name = copy;
++	return true;
++}
+diff --git a/src/ext-protocol/ext-workspace.c b/src/ext-protocol/ext-workspace.c
+index 904c2d75..99522bfc 100644
+--- a/src/ext-protocol/ext-workspace.c
++++ b/src/ext-protocol/ext-workspace.c
+@@ -5,6 +5,7 @@
+ #include "mango/dispatch/bind.h"
+ #include "mango/manage/client.h"
+ #include "mango/manage/monitor.h"
++#include <string.h>
+ 
+ static struct wl_list workspaces;
+ 
+@@ -43,7 +44,7 @@ const char *get_name_from_tag(uint32_t tag) {
+ 	if (tag == 0)
+ 		return "overview";
+ 	if (tag <= (uint32_t)config.tag_num)
+-		return tags[tag - 1];
++		return get_tag_name(tag);
+ 	return NULL;
  }
  
- static const char *get_name_from_tag(uint32_t tag) {
--	static const char *names[] = {"overview", "1", "2", "3", "4",
--								  "5",		  "6", "7", "8", "9"};
--	return (tag < sizeof(names) / sizeof(names[0])) ? names[tag] : NULL;
-+	if (tag == 0)
-+		return "overview";
-+	return get_tag_name((int)tag);
- }
- 
- void destroy_workspace(struct workspace *workspace) {
-@@ -155,6 +155,8 @@ void dwl_ext_workspace_printstatus(Monitor *m) {
+@@ -175,6 +176,12 @@ void mango_ext_workspace_printstatus(Monitor *m) {
  	wl_list_for_each(w, &workspaces, link) {
  		if (w && w->m == m) {
  
-+			wlr_ext_workspace_handle_v1_set_name(w->ext_workspace,
-+				get_name_from_tag(w->tag));
++			/* Tags can be renamed at runtime; keep the protocol name in sync. */
++			const char *name = get_name_from_tag(w->tag);
++			if (name && (!w->ext_workspace->name ||
++						 strcmp(w->ext_workspace->name, name) != 0))
++				wlr_ext_workspace_handle_v1_set_name(w->ext_workspace, name);
++
  			tag_status = get_tag_status(w->tag, m);
  			if (tag_status == 2) {
  				wlr_ext_workspace_handle_v1_set_hidden(w->ext_workspace, false);
-diff --git a/src/ipc/ipc.h b/src/ipc/ipc.h
-index 03e0746..bb918d0 100644
---- a/src/ipc/ipc.h
-+++ b/src/ipc/ipc.h
-@@ -99,6 +99,7 @@ static cJSON *build_tags_json(Monitor *m) {
+diff --git a/src/ipc/ipc.c b/src/ipc/ipc.c
+index 29aca043..2e58db12 100644
+--- a/src/ipc/ipc.c
++++ b/src/ipc/ipc.c
+@@ -114,6 +114,8 @@ cJSON *build_tags_json(Monitor *m) {
  		}
  		cJSON *tag_obj = cJSON_CreateObject();
  		cJSON_AddNumberToObject(tag_obj, "index", tag);
-+		cJSON_AddStringToObject(tag_obj, "name", get_tag_name(tag));
++		const char *tag_name = get_tag_name(tag);
++		cJSON_AddStringToObject(tag_obj, "name", tag_name ? tag_name : "");
  		cJSON_AddBoolToObject(tag_obj, "is_active", is_active);
  		cJSON_AddBoolToObject(tag_obj, "is_urgent", is_urgent);
  		cJSON_AddStringToObject(tag_obj, "layout",
-@@ -351,6 +352,44 @@ static void handle_command(int client_fd, const char *cmd_raw) {
- 			return;
- 		}
+@@ -827,6 +829,18 @@ void handle_command(int client_fd, const char *cmd_raw) {
  		resp = build_monitor_tags_response(m);
+ 	} else if (strcmp(cmd, "get layouts") == 0) {
+ 		resp = build_layouts_response();
 +	} else if (strncmp(cmd, "rename tag ", 11) == 0) {
-+		char *rest = (char *)(cmd + 11);
 +		char *endptr;
-+		long tag_index = strtol(rest, &endptr, 10);
-+		if (endptr == rest || *endptr != ' ' ||
-+				tag_index < 1 || tag_index > (int)LENGTH(tags)) {
-+			send_static_json(client_fd, "{\"error\":\"usage: rename tag <index> <name>\"}\n");
++		long tag = strtol(cmd + 11, &endptr, 10);
++		if (endptr == cmd + 11 || *endptr != ' ' || tag < 1 ||
++			!set_tag_name((uint32_t)tag, endptr + 1)) {
++			send_static_json(
++				client_fd, "{\"error\":\"usage: rename tag <index> <name>\"}\n");
 +			return;
 +		}
-+		const char *new_name = endptr + 1;
-+		if (*new_name == '\0') {
-+			send_static_json(client_fd, "{\"error\":\"usage: rename tag <index> <name>\"}\n");
-+			return;
-+		}
-+		/* Update existing rule if present, otherwise append a new one */
-+		bool found = false;
-+		for (int i = 0; i < config.tag_rules_count; i++) {
-+			if (config.tag_rules[i].id == (int)tag_index) {
-+				free(config.tag_rules[i].name);
-+				config.tag_rules[i].name = strdup(new_name);
-+				found = true;
-+				break;
-+			}
-+		}
-+		if (!found) {
-+			config.tag_rules = realloc(config.tag_rules,
-+				(config.tag_rules_count + 1) * sizeof(ConfigTagRule));
-+			ConfigTagRule *rule = &config.tag_rules[config.tag_rules_count];
-+			memset(rule, 0, sizeof(ConfigTagRule));
-+			rule->id = (int)tag_index;
-+			rule->name = strdup(new_name);
-+			config.tag_rules_count++;
-+		}
-+		/* ext-workspace-v1 names are refreshed via printstatus below, which
-+		   triggers dwl_ext_workspace_printstatus and calls set_name on each handle */
 +		printstatus(IPC_WATCH_ARRANGGE);
 +		resp = cJSON_CreateObject();
 +		cJSON_AddBoolToObject(resp, "success", true);

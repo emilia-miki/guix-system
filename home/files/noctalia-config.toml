@@ -113,6 +113,6 @@ hide_when_no_media = true
 max_length = 320
 
 [widget.workspaces]
-display = "name"
+label_source = "name"
 minimal = true
 scale = 1.3500000000000001

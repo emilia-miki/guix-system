@@ -6,7 +6,8 @@
 
 ;; Guix revision that ships ungoogled-chromium 147.0.7727.137, whose output is
 ;; already built in the store.  Later revisions bumped it to 151, which has no
-;; aarch64 substitute and takes ~7h to compile here.  Matches channels-lock.scm.
+;; aarch64 substitute (ci.guix.gnu.org's aarch64 job only ever ends in
+;; failed-dependency) and failed to build here after ~10h on 2026-09-14.
 (define %chromium-guix-commit
   "d1e9e23fd441fce828fa74616271b00b90853cee")
 

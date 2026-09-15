@@ -5,10 +5,10 @@ cursor_theme=Adwaita
 ### Input
 xkb_rules_options=ctrl:hyper_capscontrol
 tap_to_click=1
-disable_while_typing=0
+trackpad_disable_while_typing=0
 trackpad_natural_scrolling=1
-click_method=2
-middle_button_emulation=1
+trackpad_click_method=2
+trackpad_middle_button_emulation=1
 
 ### Output
 monitorrule=name:eDP-1,scale:1.5
@@ -17,15 +17,15 @@ monitorrule=name:eDP-1,scale:1.5
 focus_on_activate=0
 borderpx=2
 animations=0
-tab_bar_height=24
-tab_bar_decorate_font_desc=Sarasa Term J 10
-tab_bar_decorate_border_width=1
-tab_bar_decorate_padding_x=8
-tab_bar_decorate_padding_y=3
-tab_bar_decorate_bg_color=0x191724ff
-tab_bar_decorate_focus_bg_color=0x26233aff
-tab_bar_decorate_border_color=0x656182ff
-tab_bar_decorate_corner_radius=0
+group_bar_height=24
+group_bar_decorate_font_desc=Sarasa Term J 10
+group_bar_decorate_border_width=1
+group_bar_decorate_padding_x=8
+group_bar_decorate_padding_y=3
+group_bar_decorate_bg_color=0x191724ff
+group_bar_decorate_focus_bg_color=0x26233aff
+group_bar_decorate_border_color=0x656182ff
+group_bar_decorate_corner_radius=0
 
 ### Autostart
 exec-once=dbus-update-activation-environment --all

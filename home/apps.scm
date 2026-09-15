@@ -54,8 +54,8 @@
                     ;; libreoffice-aarch64  ; no aarch64 substitutes, builds from source
                     preview-app
                     ;; graphics
-                    ;; blender-wayland  ; libheif rewrite forks openimageio off the
-                    ;; substitutable graph; serial aarch64 build takes hours
+                    ;; blender-wayland  ; stock blender is X11-only (no Xwayland here);
+                    ;; this rebuilds it from source, serially -- takes hours
                     gimp
                     ;; network/remote
                     wireshark remmina qbittorrent moonlight-qt telegram-desktop
