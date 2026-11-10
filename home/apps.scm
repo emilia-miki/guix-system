@@ -23,9 +23,7 @@
   #:use-module (gnu packages vnc)
   #:use-module (gnu services)
   #:use-module (guix gexp)
-  #:use-module (packages blender)
   #:use-module (packages feishin)
-  #:use-module (packages libreoffice)
   #:use-module (packages pinned)
   #:use-module (packages preview-app)
   #:export (%apps-services))
@@ -51,11 +49,10 @@
                     ;; file management
                     dolphin ark udiskie
                     ;; office
-                    ;; libreoffice-aarch64  ; no aarch64 substitutes, builds from source
+                    libreoffice-aarch64/pinned
                     preview-app
                     ;; graphics
-                    ;; blender-wayland  ; stock blender is X11-only (no Xwayland here);
-                    ;; this rebuilds it from source, serially -- takes hours
+                    blender-wayland/pinned
                     gimp
                     ;; network/remote
                     wireshark remmina qbittorrent moonlight-qt telegram-desktop

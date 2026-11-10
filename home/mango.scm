@@ -127,6 +127,7 @@ selector = wofi
 selector-args = --columns 8
 action = copy
 skin-tone = light
+files = [emojis_smileys_emotion, emojis_people_body, emojis_animals_nature, emojis_food_drink, emojis_activities, emojis_travel_places, emojis_objects, emojis_symbols, emojis_flags, miscellaneous_symbols, dingbats, arrows, mathematical_operators, letterlike_symbols, general_punctuation, currency_symbols]
 "))))
 
    (symlink-home-service 'mango-config-symlink

@@ -5,11 +5,12 @@
   #:use-module (mangowm)
   #:export (mangowm-git))
 
-;; Tag names (tagrule=id:N,name:X) and `mmsg rename tag <index> <name>'.  This
+;; Tag names (tag_rule=id:N,name:X) and `mmsg rename tag <index> <name>'.  This
 ;; is https://github.com/mangowm/mango/pull/1092 (~/Projects/xxx/mango, branch
-;; feat/add-tag-custom-names) ported to mango's post-2026-09-06 source layout.
+;; feat/add-tag-custom-names) ported to mango's split config source layout.
 ;; The channel package builds straight from the channel checkout, so the patch
-;; must keep applying after each `guix pull'; re-port it when it stops.
+;; only has to apply at the mangowm commit pinned in channels.scm; re-port it
+;; when moving that pin.
 (define-public mangowm-git
   (package
     (inherit (@ (mangowm) mangowm-git))

@@ -27,12 +27,15 @@
        (channel
         (name 'ollama-guix)
         (url "https://codeberg.org/tusharhero/ollama-guix"))
+       ;; Pinned: packages/*-tag-names.patch only apply at these commits.
        (channel
         (name 'noctalia)
         (url "https://github.com/noctalia-dev/noctalia")
-        (branch "main"))
+        (branch "main")
+        (commit "22617f2186a1e0c5f27303efac1aa583e5d073c0"))
        (channel
         (name 'mangowm)
         (url "https://github.com/mangowm/mango.git")
-        (branch "main"))
+        (branch "main")
+        (commit "5040bc34536e7b1aeaba5deee4c44fcea66abf3c"))
        %default-channels)

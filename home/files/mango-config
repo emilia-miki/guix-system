@@ -11,11 +11,11 @@ trackpad_click_method=2
 trackpad_middle_button_emulation=1
 
 ### Output
-monitorrule=name:eDP-1,scale:1.5
+monitor_rule=name:eDP-1,scale:1.5
 
 ### Appearance
 focus_on_activate=0
-borderpx=2
+border_px=2
 animations=0
 group_bar_height=24
 group_bar_decorate_font_desc=Sarasa Term J 10
@@ -28,35 +28,39 @@ group_bar_decorate_border_color=0x656182ff
 group_bar_decorate_corner_radius=0
 
 ### Autostart
-exec-once=dbus-update-activation-environment --all
-exec-once=noctalia
-exec-once=udiskie -t
-exec-once=fcitx5 -d
-exec-once=gpg-connect-agent updatestartuptty /bye
-exec-once=brightnessctl -d kbd_backlight s 100%
+exec_once=dbus-update-activation-environment --all
+exec_once=noctalia
+exec_once=udiskie -t
+exec_once=fcitx5 -d
+exec_once=gpg-connect-agent updatestartuptty /bye
+exec_once=brightnessctl -d kbd_backlight s 100%
 
 ### Application startup
-exec-once=emacs
-exec-once=librewolf
-exec-once=Telegram
-exec-once=feishin
+exec_once=emacs
+exec_once=librewolf
+exec_once=Telegram
+exec_once=feishin
 
 ### Window rules — tag assignments
-windowrule=tags:1,appid:feishin
-windowrule=tags:2,appid:librewolf
-windowrule=tags:2,appid:org.telegram.desktop
-windowrule=tags:3,appid:emacs
+window_rule=tags:1,app_id:feishin
+window_rule=tags:2,app_id:librewolf
+window_rule=tags:2,app_id:org.telegram.desktop
+window_rule=tags:3,app_id:emacs
+# Mango ignores client minimize requests by default, which leaves the "Hide" link
+# on Chromium's sharing bar dead.  The bar has no app ID, so match its title, e.g.
+# "example.com is sharing your screen."  restore_minimized brings it back.
+window_rule=ignore_minimize:0,title:is sharing .+\.$
 
 ### Tag layout defaults
-tagrule=id:1,name:一
-tagrule=id:2,name:二,layout_name:monocle
-tagrule=id:3,name:三
-tagrule=id:4,name:四
-tagrule=id:5,name:五
-tagrule=id:6,name:六
-tagrule=id:7,name:七
-tagrule=id:8,name:八
-tagrule=id:9,name:九
+tag_rule=id:1,name:一
+tag_rule=id:2,name:二,layout_name:monocle
+tag_rule=id:3,name:三
+tag_rule=id:4,name:四
+tag_rule=id:5,name:五
+tag_rule=id:6,name:六
+tag_rule=id:7,name:七
+tag_rule=id:8,name:八
+tag_rule=id:9,name:九
 
 ### Keybindings
 # Basics
@@ -125,7 +129,7 @@ bind=SUPER+SHIFT,minus,minimized
 bind=SUPER,minus,restore_minimized
 
 # Resize mode
-keymode=resize
+key_mode=resize
 bind=NONE,h,resizewin,-10,0
 bind=NONE,j,resizewin,0,+10
 bind=NONE,k,resizewin,0,-10
@@ -137,7 +141,7 @@ bind=NONE,Right,resizewin,+10,0
 bind=NONE,Return,setkeymode,default
 bind=NONE,Escape,setkeymode,default
 
-keymode=default
+key_mode=default
 bind=SUPER,r,setkeymode,resize
 
 # Media keys (via noctalia IPC)
@@ -147,7 +151,7 @@ bindl=NONE,XF86AudioRaiseVolume,spawn,noctalia msg volume-up
 bindl=NONE,XF86AudioMicMute,spawn,noctalia msg mic-mute
 bindl=NONE,XF86AudioRecord,spawn,noctalia msg mic-mute
 bindl=NONE,XF86AudioPlay,spawn,noctalia msg media toggle
-bindl=NONE,XF86AudioPause,spawn,noctalia msg media toggle
+bindls=NONE,XF86AudioPause,spawn,noctalia msg media toggle
 bindl=NONE,XF86AudioNext,spawn,noctalia msg media next
 bindl=NONE,XF86AudioPrev,spawn,noctalia msg media previous
 bindl=NONE,XF86AudioStop,spawn,noctalia msg media stop
@@ -159,7 +163,7 @@ bindl=NONE,XF86MonBrightnessUp,spawn,noctalia msg brightness-up
 bind=SUPER,n,spawn,noctalia msg screenshot-region
 bind=SUPER,m,spawn,noctalia msg screenshot-fullscreen
 bind=SUPER,p,spawn,noctalia msg session lock
-bind=SUPER,u,spawn_shell,rofimoji --files emojis_smileys_emotion emojis_people_body emojis_animals_nature emojis_food_drink emojis_activities emojis_travel_places emojis_objects emojis_symbols emojis_flags miscellaneous_symbols dingbats arrows mathematical_operators letterlike_symbols general_punctuation currency_symbols
+bind=SUPER,u,spawn,rofimoji
 bind=SUPER,c,spawn,hyprpicker -a
 
 source=~/.config/mango/noctalia.conf
